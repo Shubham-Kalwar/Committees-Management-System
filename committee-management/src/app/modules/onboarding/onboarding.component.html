@@ -1,0 +1,248 @@
+<div class="onboarding-container">
+  <!-- Animated Background Orbs -->
+  <div class="bg-orb bg-orb-1"></div>
+  <div class="bg-orb bg-orb-2"></div>
+  <div class="bg-orb bg-orb-3"></div>
+
+  <div class="onboarding-card">
+    <!-- Header -->
+    <div class="onboarding-header">
+      <div class="brand-mark">
+        <span class="material-icons brand-icon">school</span>
+        <span class="brand-text">CommitteeOS</span>
+      </div>
+      <h1 class="welcome-title">Welcome Aboard!</h1>
+      <p class="welcome-subtitle">Let's get you set up in just a few steps</p>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="progress-section">
+      <div class="progress-bar-track">
+        <div class="progress-bar-fill" [style.width.%]="progressPercentage"></div>
+      </div>
+      <div class="step-indicators">
+        <div
+          class="step-indicator"
+          *ngFor="let step of [1, 2, 3]"
+          [class.step-active]="currentStep === step"
+          [class.step-completed]="currentStep > step">
+          <div class="step-dot">
+            <span *ngIf="currentStep > step" class="material-icons step-check-icon">check</span>
+            <span *ngIf="currentStep <= step">{{ step }}</span>
+          </div>
+          <span class="step-label">
+            {{ step === 1 ? 'Profile' : step === 2 ? 'Interests' : 'Events' }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step Title -->
+    <div class="step-header">
+      <h2 class="step-title">{{ getStepTitle() }}</h2>
+      <p class="step-subtitle">{{ getStepSubtitle() }}</p>
+    </div>
+
+    <!-- Error Message -->
+    <div class="error-banner" *ngIf="errorMessage">
+      <span class="material-icons error-icon">error_outline</span>
+      <span>{{ errorMessage }}</span>
+    </div>
+
+    <!-- Step 1: Profile Setup -->
+    <div class="step-content" *ngIf="currentStep === 1" [@.disabled]="true">
+      <form [formGroup]="profileForm" class="profile-form">
+        <!-- Photo Upload -->
+        <div class="photo-upload-section">
+          <div class="photo-preview" (click)="photoInput.click()">
+            <img *ngIf="profilePhotoPreview" [src]="profilePhotoPreview" alt="Profile photo" class="photo-img" />
+            <div *ngIf="!profilePhotoPreview" class="photo-placeholder">
+              <span class="material-icons photo-placeholder-icon">add_a_photo</span>
+              <span class="photo-placeholder-text">Add Photo</span>
+            </div>
+          </div>
+          <button
+            *ngIf="profilePhotoPreview"
+            type="button"
+            class="photo-remove-btn"
+            (click)="removePhoto()">
+            <span class="material-icons">close</span>
+          </button>
+          <input
+            #photoInput
+            type="file"
+            accept="image/*"
+            hidden
+            (change)="onPhotoSelected($event)" />
+          <span class="photo-hint">Optional · Max 2MB</span>
+        </div>
+
+        <!-- Name -->
+        <div class="form-group">
+          <label class="form-label" for="onboard-name">
+            <span class="material-icons form-label-icon">person</span>
+            Full Name
+          </label>
+          <input
+            id="onboard-name"
+            type="text"
+            class="form-input"
+            formControlName="name"
+            placeholder="Enter your full name"
+            autocomplete="name" />
+          <div class="form-error" *ngIf="profileForm.get('name')?.touched && profileForm.get('name')?.invalid">
+            Name is required (min 2 characters)
+          </div>
+        </div>
+
+        <!-- Department -->
+        <div class="form-group">
+          <label class="form-label" for="onboard-department">
+            <span class="material-icons form-label-icon">apartment</span>
+            Department
+          </label>
+          <select
+            id="onboard-department"
+            class="form-input form-select"
+            formControlName="department">
+            <option value="" disabled>Select your department</option>
+            <option *ngFor="let dept of departments" [value]="dept">{{ dept }}</option>
+          </select>
+          <div class="form-error" *ngIf="profileForm.get('department')?.touched && profileForm.get('department')?.invalid">
+            Please select your department
+          </div>
+        </div>
+
+        <!-- Year -->
+        <div class="form-group">
+          <label class="form-label" for="onboard-year">
+            <span class="material-icons form-label-icon">calendar_today</span>
+            Year
+          </label>
+          <select
+            id="onboard-year"
+            class="form-input form-select"
+            formControlName="year">
+            <option value="" disabled>Select your year</option>
+            <option *ngFor="let yr of years" [value]="yr">{{ yr }}</option>
+          </select>
+          <div class="form-error" *ngIf="profileForm.get('year')?.touched && profileForm.get('year')?.invalid">
+            Please select your year
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Step 2: Interests Selection -->
+    <div class="step-content" *ngIf="currentStep === 2">
+      <div class="interests-grid">
+        <button
+          type="button"
+          *ngFor="let option of interestOptions"
+          class="interest-chip"
+          [class.interest-chip-selected]="option.selected"
+          (click)="toggleInterest(option)">
+          <span class="material-icons interest-chip-icon">{{ option.icon }}</span>
+          <span class="interest-chip-label">{{ option.label }}</span>
+          <span class="material-icons interest-check" *ngIf="option.selected">check_circle</span>
+        </button>
+      </div>
+      <p class="interests-hint">
+        <span class="material-icons hint-icon">info</span>
+        Selected: {{ selectedInterests.length }} interest{{ selectedInterests.length !== 1 ? 's' : '' }}
+      </p>
+    </div>
+
+    <!-- Step 3: Suggested Events -->
+    <div class="step-content" *ngIf="currentStep === 3">
+      <div *ngIf="isLoadingEvents" class="events-loading">
+        <div class="skeleton-event" *ngFor="let i of [1, 2, 3]">
+          <div class="skeleton-line skeleton-title"></div>
+          <div class="skeleton-line skeleton-subtitle"></div>
+        </div>
+      </div>
+
+      <div *ngIf="!isLoadingEvents && suggestedEvents.length === 0" class="events-empty">
+        <span class="material-icons events-empty-icon">event_busy</span>
+        <p class="events-empty-text">No upcoming events right now</p>
+        <p class="events-empty-hint">Don't worry, you can browse events anytime from the dashboard</p>
+      </div>
+
+      <div *ngIf="!isLoadingEvents && suggestedEvents.length > 0" class="events-grid">
+        <div
+          *ngFor="let event of suggestedEvents"
+          class="event-card"
+          [class.event-card-registered]="isEventRegistered(event)">
+          <div class="event-card-header">
+            <span class="material-icons event-card-icon">event</span>
+            <span class="event-card-status" *ngIf="event.status">{{ event.status }}</span>
+          </div>
+          <h3 class="event-card-title">{{ event.eventName }}</h3>
+          <div class="event-card-meta">
+            <span class="event-card-meta-item" *ngIf="event.eventDate">
+              <span class="material-icons meta-icon">schedule</span>
+              {{ event.eventDate | date: 'MMM d, yyyy' }}
+            </span>
+            <span class="event-card-meta-item" *ngIf="event.location">
+              <span class="material-icons meta-icon">place</span>
+              {{ event.location }}
+            </span>
+          </div>
+          <button
+            type="button"
+            class="event-register-btn"
+            [disabled]="isEventRegistered(event)"
+            (click)="registerForEvent(event)">
+            <span class="material-icons register-icon">{{ isEventRegistered(event) ? 'check_circle' : 'how_to_reg' }}</span>
+            {{ isEventRegistered(event) ? 'Registered' : 'Register' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="onboarding-actions">
+      <button
+        *ngIf="currentStep > 1"
+        type="button"
+        class="btn btn-secondary"
+        (click)="previousStep()"
+        [disabled]="isSubmitting">
+        <span class="material-icons btn-icon">arrow_back</span>
+        Back
+      </button>
+
+      <button
+        *ngIf="currentStep >= 2"
+        type="button"
+        class="btn btn-ghost"
+        (click)="skipStep()"
+        [disabled]="isSubmitting">
+        Skip
+      </button>
+
+      <div class="actions-spacer"></div>
+
+      <button
+        *ngIf="currentStep < 3"
+        type="button"
+        class="btn btn-primary"
+        (click)="nextStep()"
+        [disabled]="currentStep === 1 && !canProceedFromStep1">
+        Next
+        <span class="material-icons btn-icon">arrow_forward</span>
+      </button>
+
+      <button
+        *ngIf="currentStep === 3"
+        type="button"
+        class="btn btn-primary btn-finish"
+        (click)="completeOnboarding()"
+        [disabled]="isSubmitting">
+        <span *ngIf="isSubmitting" class="btn-spinner"></span>
+        <span *ngIf="!isSubmitting" class="material-icons btn-icon">rocket_launch</span>
+        {{ isSubmitting ? 'Setting up...' : 'Get Started' }}
+      </button>
+    </div>
+  </div>
+</div>
