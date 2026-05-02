@@ -1,3 +1,4 @@
+import { environment } from '../../environments/environment';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
@@ -40,7 +41,7 @@ export type QrSessionRefreshPayload = {
   providedIn: 'root'
 })
 export class AttendanceService {
-  private readonly apiUrl = 'http://localhost:8080/api/attendance';
+  private readonly apiUrl = `\${environment.apiUrl}/attendance`;
 
   constructor(private http: HttpClient) {}
 

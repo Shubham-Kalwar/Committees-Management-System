@@ -1,3 +1,4 @@
+import { environment } from '../../environments/environment';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
@@ -8,7 +9,7 @@ import { ApiResponse } from '../models/auth.model';
   providedIn: 'root'
 })
 export class CommitteeService {
-  private readonly apiUrl = 'http://localhost:8080/api/committees';
+  private readonly apiUrl = `\${environment.apiUrl}/committees`;
 
   constructor(private http: HttpClient) {}
 
