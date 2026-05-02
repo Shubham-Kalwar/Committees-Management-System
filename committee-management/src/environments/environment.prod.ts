@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://your-render-backend-url.onrender.com/api' // Replace with your actual Render URL
+  apiUrl: 'https://committees-management-system.onrender.com/api' // Using your live Render URL
 };
