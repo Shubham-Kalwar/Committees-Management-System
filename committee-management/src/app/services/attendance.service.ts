@@ -41,7 +41,7 @@ export type QrSessionRefreshPayload = {
   providedIn: 'root'
 })
 export class AttendanceService {
-  private readonly apiUrl = `\${environment.apiUrl}/attendance`;
+  private readonly apiUrl = `${environment.apiUrl}/attendance`;
 
   constructor(private http: HttpClient) {}
 

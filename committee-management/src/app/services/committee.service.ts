@@ -9,7 +9,7 @@ import { ApiResponse } from '../models/auth.model';
   providedIn: 'root'
 })
 export class CommitteeService {
-  private readonly apiUrl = `\${environment.apiUrl}/committees`;
+  private readonly apiUrl = `${environment.apiUrl}/committees`;
 
   constructor(private http: HttpClient) {}
 

@@ -8,8 +8,8 @@ import { ApiResponse, AuthRequest, AuthResponse, ChangePasswordRequest, ChangePa
   providedIn: 'root'
 })
 export class AuthService {
-  private readonly apiUrl = `\${environment.apiUrl}/auth`;
-  private readonly loginApiUrl = `\${environment.apiUrl}/login`;
+  private readonly apiUrl = `${environment.apiUrl}/auth`;
+  private readonly loginApiUrl = `${environment.apiUrl}/login`;
   private readonly roleKey = 'role';
   private readonly tokenKey = 'token';
   private onboardingStatus: boolean | null = null;
@@ -164,7 +164,7 @@ export class AuthService {
   }
 
   completeOnboarding(data: { name?: string; department?: string; year?: string; interests?: string[] }): Observable<ApiResponse<unknown>> {
-    return this.http.put<ApiResponse<unknown>>(`\${environment.apiUrl}/users/onboard`, data).pipe(
+    return this.http.put<ApiResponse<unknown>>(`${environment.apiUrl}/users/onboard`, data).pipe(
       tap(() => {
         this.onboardingStatus = true;
       })

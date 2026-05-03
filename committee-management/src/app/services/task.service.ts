@@ -9,7 +9,7 @@ import { ApiResponse } from '../models/auth.model';
   providedIn: 'root'
 })
 export class TaskService {
-  private readonly apiUrl = `\${environment.apiUrl}/tasks`;
+  private readonly apiUrl = `${environment.apiUrl}/tasks`;
 
   constructor(private http: HttpClient) {}
 

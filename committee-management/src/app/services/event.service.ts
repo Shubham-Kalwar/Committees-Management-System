@@ -10,8 +10,8 @@ import { EventRegistration, RegistrationStatus } from '../models/registration.mo
   providedIn: 'root'
 })
 export class EventService {
-  private readonly apiUrl = `\${environment.apiUrl}/events`;
-  private readonly registrationUrl = `\${environment.apiUrl}/registrations`;
+  private readonly apiUrl = `${environment.apiUrl}/events`;
+  private readonly registrationUrl = `${environment.apiUrl}/registrations`;
 
   constructor(private http: HttpClient) {}
 

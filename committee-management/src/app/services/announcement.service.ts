@@ -9,7 +9,7 @@ import { ApiResponse } from '../models/auth.model';
   providedIn: 'root'
 })
 export class AnnouncementService {
-  private readonly apiUrl = `\${environment.apiUrl}/announcements`;
+  private readonly apiUrl = `${environment.apiUrl}/announcements`;
 
   constructor(private http: HttpClient) {}
 
