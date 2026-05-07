@@ -1,6 +1,7 @@
 package com.example.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import com.example.Entity.EventFeedback;
@@ -19,6 +20,8 @@ public interface EventFeedbackService {
     Double getAverageRatingForEvent(Integer eventId);
     List<EventFeedback> searchFeedbackByComments(String keyword);
     EventFeedback saveFeedback(EventFeedback feedback);
+    EventFeedback submitFeedback(Integer eventId, Integer userId, Integer rating, String comment);
+    Map<String, Object> getAnalytics(Integer eventId);
     void deleteFeedback(Integer id);
     EventFeedback updateFeedback(Integer id, EventFeedback feedbackDetails);
 }

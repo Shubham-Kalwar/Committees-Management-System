@@ -52,6 +52,9 @@ public class Users {
 
     @Column(name = "interests", columnDefinition = "TEXT")
     private String interests;
+
+    @Column(name = "account_status", length = 20)
+    private String accountStatus = "ACTIVE";
     
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -225,5 +228,13 @@ public class Users {
 
     public void setInterests(String interests) {
         this.interests = interests;
+    }
+
+    public String getAccountStatus() {
+        return accountStatus;
+    }
+
+    public void setAccountStatus(String accountStatus) {
+        this.accountStatus = accountStatus;
     }
 }

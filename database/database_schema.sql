@@ -59,7 +59,7 @@ CREATE TABLE users (
 -- 4) Committee
 CREATE TABLE committee (
     committee_id SERIAL PRIMARY KEY,
-    committee_name VARCHAR(255) NOT NULL,
+    committee_name VARCHAR(255) NOT NULL UNIQUE,
     head_id INTEGER NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
@@ -72,6 +72,26 @@ CREATE TABLE committee (
 
     CONSTRAINT fk_committee_head FOREIGN KEY (head_id) REFERENCES users(user_id) ON DELETE SET NULL,
     CONSTRAINT fk_committee_login FOREIGN KEY (login_id) REFERENCES login(login_id) ON DELETE SET NULL
+);
+
+-- Committee Membership (application/approval workflow)
+CREATE TABLE committee_membership (
+    membership_id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL,
+    committee_id INTEGER NOT NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'PENDING',
+    applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    approved_at TIMESTAMP,
+    approved_by INTEGER,
+    role_in_committee VARCHAR(50) DEFAULT 'MEMBER',
+    application_message TEXT,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_membership_user FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    CONSTRAINT fk_membership_committee FOREIGN KEY (committee_id) REFERENCES committee(committee_id) ON DELETE CASCADE,
+    CONSTRAINT fk_membership_approved_by FOREIGN KEY (approved_by) REFERENCES users(user_id) ON DELETE SET NULL,
+    CONSTRAINT uq_membership_user_committee UNIQUE (user_id, committee_id),
+    CONSTRAINT ck_membership_status CHECK (status IN ('PENDING', 'APPROVED', 'REJECTED'))
 );
 
 ALTER TABLE roles

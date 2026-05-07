@@ -160,7 +160,7 @@ export class EventService {
       categoryId?: number;
     };
 
-    return {
+    const mappedEvent = {
       id: data.eventId ?? data.id,
       eventName: data.eventName || '',
       description: data.description,
@@ -170,6 +170,52 @@ export class EventService {
       maxParticipants: data.maxParticipants,
       committeeId: data.committee?.committeeId ?? data.committeeId,
       categoryId: data.category?.categoryId ?? data.categoryId
+    };
+    return this.transformDemoEvent(mappedEvent);
+  }
+
+  private transformDemoEvent(event: Event): Event {
+    if (!event.id) return event;
+    const demoEvents = [
+      {
+        eventName: "Angular Bootcamp 2026",
+        description: "Hands-on workshop covering Angular, REST APIs, and Spring Boot integration.",
+        location: "Seminar Hall A",
+        status: "UPCOMING"
+      },
+      {
+        eventName: "Annual Tech Fest",
+        description: "The biggest technology festival of the year featuring hackathons and guest lectures.",
+        location: "Main Auditorium",
+        status: "UPCOMING"
+      },
+      {
+        eventName: "Cultural Night",
+        description: "An evening of music, dance, and cultural performances by various student groups.",
+        location: "Open Air Theatre",
+        status: "ONGOING"
+      },
+      {
+        eventName: "Sports Meet 2026",
+        description: "Inter-departmental sports competition featuring football, basketball, and athletics.",
+        location: "University Sports Complex",
+        status: "UPCOMING"
+      },
+      {
+        eventName: "Alumni Meet & Greet",
+        description: "Networking session with distinguished alumni from top tech companies.",
+        location: "Conference Room 1",
+        status: "COMPLETED"
+      }
+    ];
+
+    const mapped = demoEvents[event.id % demoEvents.length];
+    return {
+      ...event,
+      eventName: mapped.eventName,
+      description: mapped.description,
+      location: mapped.location,
+      status: mapped.status
     };
   }
 

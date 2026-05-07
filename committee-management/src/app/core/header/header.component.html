@@ -79,7 +79,7 @@
           <span class="workspace-brand-subtitle">{{ workspaceSubtitle }}</span>
         </a>
 
-        <div class="workspace-search-container workspace-search-shell-desktop" #desktopSearchContainer>
+        <div *ngIf="!isAuthPage" class="workspace-search-container workspace-search-shell-desktop" #desktopSearchContainer>
           <div class="workspace-search-shell">
             <span class="material-icons workspace-search-icon">search</span>
             <input
@@ -310,7 +310,7 @@
       </div>
 
       <div class="pb-3 md:hidden lg:hidden">
-        <div class="workspace-search-container workspace-search-shell-mobile w-full" #mobileSearchContainer>
+        <div *ngIf="!isAuthPage" class="workspace-search-container workspace-search-shell-mobile w-full" #mobileSearchContainer>
           <div class="workspace-search-shell w-full">
             <span class="material-icons workspace-search-icon">search</span>
             <input

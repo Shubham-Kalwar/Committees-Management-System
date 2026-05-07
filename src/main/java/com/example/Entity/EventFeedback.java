@@ -16,11 +16,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 
 @Entity
-@Table(name = "event_feedback")
+@Table(name = "event_feedback", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"event_id", "user_id"}, name = "uk_event_feedback_event_user")
+})
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class EventFeedback {
     

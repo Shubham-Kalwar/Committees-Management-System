@@ -3,6 +3,7 @@ package com.example.Controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,14 +30,17 @@ public class MediaUploadController {
     public ResponseEntity<ResponceBean<EventMedia>> uploadMedia(
             @RequestParam Integer eventId,
             @RequestParam EventMedia.MediaType mediaType,
-            @RequestParam("file") MultipartFile file) {
+            @RequestParam("file") MultipartFile file,
+            Authentication authentication) {
 
-        EventMedia uploaded = eventMediaService.uploadMedia(eventId, mediaType, file);
-        if (uploaded == null) {
+        try {
+            String uploadedBy = authentication != null ? authentication.getName() : "unknown";
+            EventMedia uploaded = eventMediaService.uploadMedia(eventId, mediaType, file, uploadedBy);
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(ResponceBean.success("Media uploaded successfully", uploaded));
+        } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ResponceBean.error("Unable to upload media. Check event and file payload."));
+                    .body(ResponceBean.error(e.getMessage()));
         }
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ResponceBean.success("Media uploaded successfully", uploaded));
     }
 }

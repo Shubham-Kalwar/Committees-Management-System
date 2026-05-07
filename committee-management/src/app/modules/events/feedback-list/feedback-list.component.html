@@ -1,0 +1,49 @@
+<div class="feedback-list-container">
+	<!-- Loading -->
+	<div *ngIf="loading" class="list-loading">
+		<div class="inline-flex items-center gap-2 text-sm text-slate-500">
+			<span class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-slate-300 border-t-blue-600"></span>
+			Loading feedback...
+		</div>
+	</div>
+
+	<!-- Error -->
+	<p *ngIf="!loading && errorMessage" class="list-error">{{ errorMessage }}</p>
+
+	<!-- Empty -->
+	<div *ngIf="!loading && !errorMessage && feedbackItems.length === 0" class="list-empty">
+		<span class="material-icons list-empty-icon">forum</span>
+		<p class="list-empty-title">No feedback yet</p>
+		<p class="list-empty-subtitle">Be the first to share your experience!</p>
+	</div>
+
+	<!-- Count badge -->
+	<div *ngIf="!loading && feedbackItems.length > 0" class="list-header">
+		<span class="list-count">{{ feedbackItems.length }} Response{{ feedbackItems.length === 1 ? '' : 's' }}</span>
+	</div>
+
+	<!-- Feedback Items -->
+	<div *ngIf="!loading && feedbackItems.length > 0" class="list-items">
+		<div *ngFor="let fb of feedbackItems" class="feedback-card">
+			<div class="feedback-top">
+				<div class="user-avatar" [style.background]="getAvatarColor(fb)">
+					{{ getUserInitial(fb) }}
+				</div>
+				<div class="user-info">
+					<p class="user-name">{{ getUserName(fb) }}</p>
+					<p class="feedback-date">{{ formatDate(fb.submittedAt) }}</p>
+				</div>
+				<div class="feedback-stars">
+					<span
+						*ngFor="let star of stars"
+						class="material-icons star-icon"
+						[class.star-filled]="isStarFilled(star, fb.rating)"
+					>
+						{{ isStarFilled(star, fb.rating) ? 'star' : 'star_border' }}
+					</span>
+				</div>
+			</div>
+			<p *ngIf="fb.comments" class="feedback-comment">{{ fb.comments }}</p>
+		</div>
+	</div>
+</div>

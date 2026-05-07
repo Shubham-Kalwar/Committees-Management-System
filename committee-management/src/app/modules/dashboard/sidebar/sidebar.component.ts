@@ -26,6 +26,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
       { label: 'Users', icon: 'group', route: '/users' },
       { label: 'Events & Attendance', icon: 'event', route: '/events' },
       { label: 'Committees', icon: 'apartment', route: '/committees' },
+      { label: 'Manage Faculty', icon: 'manage_accounts', route: '/users/faculty' },
       { label: 'Mail Tools', icon: 'mail', route: '/admin/mail-tools' }
     ],
     FACULTY: [

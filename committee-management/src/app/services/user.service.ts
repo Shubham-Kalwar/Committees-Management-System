@@ -25,6 +25,10 @@ export class UserService {
     );
   }
 
+  createFaculty(payload: any): Observable<any> {
+    return this.http.post<ApiResponse<any>>(`${environment.apiUrl}/admin/faculty/create`, payload);
+  }
+
   private mapUser(raw: unknown): User {
     const data = (raw || {}) as {
       userId?: number;

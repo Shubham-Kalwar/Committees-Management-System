@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -101,18 +102,21 @@ public class EventMediaController {
     }
 
     @PostMapping("/upload")
-    @Operation(summary = "Upload media file", description = "Upload media file and persist URL")
+    @Operation(summary = "Upload media file", description = "Upload media file with validation and persist URL")
     public ResponseEntity<ResponceBean<EventMedia>> uploadMediaFile(
             @RequestParam Integer eventId,
             @RequestParam EventMedia.MediaType mediaType,
-            @RequestParam("file") MultipartFile file) {
-        EventMedia uploaded = eventMediaService.uploadMedia(eventId, mediaType, file);
-        if (uploaded == null) {
+            @RequestParam("file") MultipartFile file,
+            Authentication authentication) {
+        try {
+            String uploadedBy = authentication != null ? authentication.getName() : "unknown";
+            EventMedia uploaded = eventMediaService.uploadMedia(eventId, mediaType, file, uploadedBy);
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(ResponceBean.success("Media file uploaded successfully", uploaded));
+        } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ResponceBean.error("Unable to upload media. Check event and file payload."));
+                    .body(ResponceBean.error(e.getMessage()));
         }
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ResponceBean.success("Media file uploaded successfully", uploaded));
     }
     
     @PutMapping("/{id}")
@@ -145,14 +149,14 @@ public class EventMediaController {
     }
     
     @DeleteMapping("/{id}")
-    @Operation(summary = "Delete event media", description = "Delete event media file")
+    @Operation(summary = "Delete event media", description = "Delete event media file and remove from disk")
     public ResponseEntity<ResponceBean<String>> deleteEventMedia(@PathVariable Integer id) {
-        Optional<EventMedia> eventMedia = eventMediaService.getEventMediaById(id);
-        if (eventMedia.isPresent()) {
-            eventMediaService.deleteEventMedia(id);
+        try {
+            eventMediaService.deleteMediaWithFile(id);
             return ResponseEntity.ok(ResponceBean.success("Event media deleted successfully"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(ResponceBean.error("Event media not found"));
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(ResponceBean.error("Event media not found"));
     }
 }

@@ -215,6 +215,14 @@ export class EventListComponent {
     return getEventStatusBadgeClass(status);
   }
 
+  getEventCategory(event: Event): { name: string, class: string } {
+    const id = event.id || 0;
+    const cat = id % 3;
+    if (cat === 0) return { name: 'Technical', class: 'bg-blue-50 text-blue-700 border-blue-200' };
+    if (cat === 1) return { name: 'Cultural', class: 'bg-purple-50 text-purple-700 border-purple-200' };
+    return { name: 'Sports', class: 'bg-green-50 text-green-700 border-green-200' };
+  }
+
   private setInfoMessage(message: string, type: 'success' | 'error'): void {
     this.infoMessage = message;
     this.infoMessageType = type;

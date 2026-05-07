@@ -1,7 +1,42 @@
 <section class="w-full space-y-4">
 	<div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-		<h2 class="page-header-title">Committees</h2>
-		<p class="page-header-subtitle">Explore committee ownership, faculty in-charge details, and role context.</p>
+		<div class="flex flex-wrap items-start justify-between gap-3">
+			<div>
+				<h2 class="page-header-title">Committees</h2>
+				<p class="page-header-subtitle">Explore committee ownership, faculty in-charge details, and role context.</p>
+			</div>
+
+			<button
+				*ngIf="isAdmin"
+				type="button"
+				(click)="openCreateModal()"
+				class="inline-flex items-center gap-1.5 rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:-translate-y-0.5 hover:bg-blue-700"
+			>
+				<span class="material-icons text-[18px]">add</span>
+				Create Committee
+			</button>
+		</div>
+
+		<div class="mt-4 flex flex-wrap items-center gap-2">
+			<button
+				type="button"
+				(click)="setActiveView('ALL')"
+				class="inline-flex items-center rounded-xl border px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.08em] transition"
+				[ngClass]="activeView === 'ALL' ? 'border-blue-600 bg-blue-600 text-white' : 'border-slate-300 bg-white text-slate-700 hover:border-slate-400'"
+			>
+				All Committees ({{ committees.length }})
+			</button>
+
+			<button
+				type="button"
+				*ngIf="canApply"
+				(click)="setActiveView('MY')"
+				class="inline-flex items-center rounded-xl border px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.08em] transition"
+				[ngClass]="activeView === 'MY' ? 'border-blue-600 bg-blue-600 text-white' : 'border-slate-300 bg-white text-slate-700 hover:border-slate-400'"
+			>
+				My Committees ({{ myMemberships.length }})
+			</button>
+		</div>
 	</div>
 
 	<div *ngIf="isLoading" class="grid gap-4 md:grid-cols-2" aria-live="polite">
@@ -19,23 +54,50 @@
 	</div>
 
 	<div *ngIf="!isLoading && !errorMessage">
-		<ng-container *ngIf="committees.length > 0; else emptyCommitteesState">
+		<ng-container *ngIf="displayedCommittees.length > 0; else emptyCommitteesState">
 			<div class="grid gap-4 md:grid-cols-2">
-				<article *ngFor="let committee of committees" class="committee-card rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+				<article *ngFor="let committee of displayedCommittees" class="committee-card rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
 					<div class="flex items-start justify-between gap-3">
-						<div class="min-w-0">
-							<h3 class="mb-1 truncate text-xl font-semibold text-slate-800">{{ committee.committeeName }}</h3>
-							<p class="mb-0 text-sm font-medium text-slate-500">{{ committee.facultyInchargeName || 'Faculty not assigned' }}</p>
+						<div class="flex items-center gap-3 min-w-0">
+							<div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-blue-100 text-blue-700">
+								<span class="material-icons text-[24px]">groups</span>
+							</div>
+							<div class="min-w-0">
+								<h3 class="mb-1 truncate text-xl font-semibold text-slate-800">{{ committee.committeeName }}</h3>
+								<p class="mb-0 text-sm font-medium text-slate-500">{{ committee.facultyInchargeName || 'Faculty not assigned' }}</p>
+							</div>
 						</div>
 
-						<span class="inline-flex items-center rounded-full bg-blue-50 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-blue-700">
-							Committee
-						</span>
+						<div class="flex items-center gap-1.5 shrink-0">
+							<span class="inline-flex items-center rounded-full bg-blue-50 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-blue-700">
+								Committee
+							</span>
+
+							<!-- Admin edit/delete actions -->
+							<ng-container *ngIf="isAdmin">
+								<button
+									type="button"
+									(click)="openEditModal(committee)"
+									class="flex h-8 w-8 items-center justify-center rounded-full text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
+									title="Edit committee"
+								>
+									<span class="material-icons text-[18px]">edit</span>
+								</button>
+								<button
+									type="button"
+									(click)="openDeleteConfirm(committee)"
+									class="flex h-8 w-8 items-center justify-center rounded-full text-slate-400 transition-colors hover:bg-rose-50 hover:text-rose-600"
+									title="Delete committee"
+								>
+									<span class="material-icons text-[18px]">delete_outline</span>
+								</button>
+							</ng-container>
+						</div>
 					</div>
 
 					<p class="mb-0 mt-3 text-sm leading-relaxed text-slate-600">{{ getCommitteeDescription(committee) }}</p>
 
-					<div class="mt-4">
+					<div class="mt-4 flex flex-wrap items-center gap-2">
 						<a
 							*ngIf="getCommitteeRouteId(committee) as routeId; else unavailableDetails"
 							class="inline-flex items-center rounded-xl border border-blue-300 bg-blue-50 px-3 py-2 text-sm font-semibold text-blue-700 no-underline transition-all hover:-translate-y-0.5 hover:bg-blue-100 hover:text-blue-800"
@@ -49,6 +111,42 @@
 								Details Unavailable
 							</span>
 						</ng-template>
+
+						<!-- Faculty: Manage Applications link -->
+						<a
+							*ngIf="isFaculty && getCommitteeRouteId(committee)"
+							class="inline-flex items-center gap-1 rounded-xl border border-indigo-300 bg-indigo-50 px-3 py-2 text-sm font-semibold text-indigo-700 no-underline transition-all hover:-translate-y-0.5 hover:bg-indigo-100 hover:text-indigo-800"
+							[routerLink]="['applications']"
+						>
+							<span class="material-icons text-[16px]">assignment_ind</span>
+							Applications
+						</a>
+
+						<!-- Student membership status / apply -->
+						<ng-container *ngIf="canApply">
+							<span *ngIf="getMembershipStatus(committee.id) === 'APPROVED'" class="inline-flex items-center rounded-xl bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-700">
+								Member
+							</span>
+							<button 
+								*ngIf="getMembershipStatus(committee.id) === 'PENDING'" 
+								disabled 
+								class="inline-flex items-center rounded-xl border border-amber-300 bg-amber-50 px-3 py-2 text-sm font-semibold text-amber-700 opacity-80 cursor-not-allowed">
+								Application Pending
+							</button>
+							<button 
+								*ngIf="getMembershipStatus(committee.id) === 'REJECTED'" 
+								disabled 
+								class="inline-flex items-center rounded-xl border border-rose-300 bg-rose-50 px-3 py-2 text-sm font-semibold text-rose-700 opacity-80 cursor-not-allowed">
+								Rejected
+							</button>
+							<button 
+								*ngIf="!getMembershipStatus(committee.id)" 
+								(click)="openApplicationModal(committee)"
+								[disabled]="isApplying && applyingCommitteeId === committee.id"
+								class="inline-flex items-center rounded-xl bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:-translate-y-0.5 hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed">
+								Apply to Join
+							</button>
+						</ng-container>
 					</div>
 				</article>
 			</div>
@@ -57,11 +155,164 @@
 		<ng-template #emptyCommitteesState>
 			<app-empty-state
 				icon="groups"
-				title="No committees found"
-				subtitle="You are not assigned to any committee yet"
-				actionLabel="Explore Committees"
-				actionRoute="/landing"
+				[title]="activeView === 'MY' ? 'You have not joined any committee yet.' : 'No committees found.'"
+				[subtitle]="activeView === 'MY' ? 'Apply to join a committee to collaborate and organize campus activities.' : 'Committees will appear here once created.'"
+				[actionLabel]="activeView === 'MY' ? 'Browse Committees' : 'Explore Platform'"
+				[actionRoute]="activeView === 'MY' ? '' : '/landing'"
+				(actionClick)="activeView === 'MY' ? setActiveView('ALL') : null"
 			></app-empty-state>
 		</ng-template>
+	</div>
+
+	<!-- ─── Student Application Modal ─── -->
+	<div *ngIf="showApplicationModal && activeCommitteeForApplication" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4">
+		<div class="w-full max-w-lg rounded-2xl bg-white shadow-xl" (click)="$event.stopPropagation()">
+			<div class="flex items-center justify-between border-b border-slate-100 px-6 py-4">
+				<h3 class="text-lg font-semibold text-slate-800">Apply to {{ activeCommitteeForApplication.committeeName }}</h3>
+				<button (click)="closeApplicationModal()" class="flex h-8 w-8 items-center justify-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors">
+					<span class="material-icons text-[20px]">close</span>
+				</button>
+			</div>
+			
+			<div class="p-6">
+				<p class="mb-4 text-sm text-slate-600">Please provide some details about why you want to join this committee. Include any relevant skills or past experience.</p>
+				
+				<div class="space-y-2">
+					<label for="applicationMessage" class="block text-sm font-medium text-slate-700">Application Message <span class="text-rose-500">*</span></label>
+					<textarea 
+						id="applicationMessage" 
+						[(ngModel)]="applicationMessage" 
+						rows="4" 
+						class="w-full rounded-xl border border-slate-300 p-3 text-sm text-slate-800 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-shadow"
+						placeholder="E.g. I am interested in joining because... My relevant skills are..."
+					></textarea>
+				</div>
+			</div>
+			
+			<div class="flex items-center justify-end gap-3 border-t border-slate-100 bg-slate-50 px-6 py-4 rounded-b-2xl">
+				<button 
+					type="button" 
+					(click)="closeApplicationModal()" 
+					class="rounded-xl px-4 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-200">
+					Cancel
+				</button>
+				<button 
+					type="button" 
+					(click)="submitApplication()"
+					[disabled]="!applicationMessage.trim() || isApplying"
+					class="inline-flex items-center justify-center rounded-xl bg-blue-600 px-5 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed min-w-[100px]">
+					<span *ngIf="isApplying" class="material-icons mr-1 animate-spin text-[16px]">autorenew</span>
+					{{ isApplying ? 'Submitting...' : 'Submit' }}
+				</button>
+			</div>
+		</div>
+	</div>
+
+	<!-- ─── Admin Create/Edit Committee Modal ─── -->
+	<div *ngIf="showCommitteeModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4">
+		<div class="w-full max-w-lg rounded-2xl bg-white shadow-xl" (click)="$event.stopPropagation()">
+			<div class="flex items-center justify-between border-b border-slate-100 px-6 py-4">
+				<h3 class="text-lg font-semibold text-slate-800">{{ committeeModalMode === 'create' ? 'Create New Committee' : 'Edit Committee' }}</h3>
+				<button (click)="closeCommitteeModal()" class="flex h-8 w-8 items-center justify-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors">
+					<span class="material-icons text-[20px]">close</span>
+				</button>
+			</div>
+			
+			<div class="space-y-4 p-6">
+				<div>
+					<label for="committeeName" class="block text-sm font-medium text-slate-700 mb-1">Committee Name <span class="text-rose-500">*</span></label>
+					<input 
+						id="committeeName" 
+						type="text" 
+						[(ngModel)]="committeeForm.committeeName"
+						class="w-full rounded-xl border border-slate-300 p-3 text-sm text-slate-800 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-shadow"
+						placeholder="e.g. Technical Committee"
+					/>
+				</div>
+
+				<div>
+					<label for="facultyName" class="block text-sm font-medium text-slate-700 mb-1">Faculty In-Charge</label>
+					<input 
+						id="facultyName" 
+						type="text" 
+						[(ngModel)]="committeeForm.facultyInchargeName"
+						class="w-full rounded-xl border border-slate-300 p-3 text-sm text-slate-800 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-shadow"
+						placeholder="e.g. Dr. Namdeo Badhe"
+					/>
+				</div>
+
+				<div>
+					<label for="facultyPosition" class="block text-sm font-medium text-slate-700 mb-1">Faculty Position</label>
+					<input 
+						id="facultyPosition" 
+						type="text" 
+						[(ngModel)]="committeeForm.facultyPosition"
+						class="w-full rounded-xl border border-slate-300 p-3 text-sm text-slate-800 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-shadow"
+						placeholder="e.g. HOD, Associate Professor"
+					/>
+				</div>
+
+				<div>
+					<label for="committeeInfo" class="block text-sm font-medium text-slate-700 mb-1">About Committee</label>
+					<textarea 
+						id="committeeInfo" 
+						[(ngModel)]="committeeForm.committeeInfo" 
+						rows="3" 
+						class="w-full rounded-xl border border-slate-300 p-3 text-sm text-slate-800 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-shadow"
+						placeholder="Describe the committee's purpose and activities..."
+					></textarea>
+				</div>
+			</div>
+			
+			<div class="flex items-center justify-end gap-3 border-t border-slate-100 bg-slate-50 px-6 py-4 rounded-b-2xl">
+				<button 
+					type="button" 
+					(click)="closeCommitteeModal()" 
+					class="rounded-xl px-4 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-200">
+					Cancel
+				</button>
+				<button 
+					type="button" 
+					(click)="saveCommittee()"
+					[disabled]="!committeeForm.committeeName.trim() || isSavingCommittee"
+					class="inline-flex items-center justify-center rounded-xl bg-blue-600 px-5 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed min-w-[120px]">
+					<span *ngIf="isSavingCommittee" class="material-icons mr-1 animate-spin text-[16px]">autorenew</span>
+					{{ isSavingCommittee ? 'Saving...' : (committeeModalMode === 'create' ? 'Create' : 'Save Changes') }}
+				</button>
+			</div>
+		</div>
+	</div>
+
+	<!-- ─── Delete Confirmation Modal ─── -->
+	<div *ngIf="showDeleteConfirm && deletingCommittee" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4">
+		<div class="w-full max-w-md rounded-2xl bg-white shadow-xl" (click)="$event.stopPropagation()">
+			<div class="p-6 text-center">
+				<div class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-rose-100 mb-4">
+					<span class="material-icons text-[28px] text-rose-600">warning</span>
+				</div>
+				<h3 class="text-lg font-semibold text-slate-800 mb-2">Delete Committee</h3>
+				<p class="text-sm text-slate-600">
+					Are you sure you want to delete <strong>{{ deletingCommittee.committeeName }}</strong>? 
+					This will also remove all associated events, tasks, and announcements. This action cannot be undone.
+				</p>
+			</div>
+			
+			<div class="flex items-center justify-center gap-3 border-t border-slate-100 bg-slate-50 px-6 py-4 rounded-b-2xl">
+				<button 
+					type="button" 
+					(click)="closeDeleteConfirm()" 
+					class="rounded-xl px-4 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-200">
+					Cancel
+				</button>
+				<button 
+					type="button" 
+					(click)="confirmDelete()"
+					[disabled]="isDeletingCommittee"
+					class="inline-flex items-center justify-center rounded-xl bg-rose-600 px-5 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:bg-rose-700 disabled:opacity-60 disabled:cursor-not-allowed min-w-[100px]">
+					<span *ngIf="isDeletingCommittee" class="material-icons mr-1 animate-spin text-[16px]">autorenew</span>
+					{{ isDeletingCommittee ? 'Deleting...' : 'Delete' }}
+				</button>
+			</div>
+		</div>
 	</div>
 </section>

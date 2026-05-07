@@ -20,8 +20,7 @@ export class RegisterComponent {
   registerForm = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(2)]],
     email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(6)]],
-    role: ['STUDENT', [Validators.required]]
+    password: ['', [Validators.required, Validators.minLength(6)]]
   });
 
   constructor(
@@ -41,28 +40,14 @@ export class RegisterComponent {
       name: string;
       email: string;
       password: string;
-      role: string;
     };
-
-    const normalizedRole = (payload.role || '').toUpperCase();
-    if (normalizedRole !== 'FACULTY' && normalizedRole !== 'STUDENT') {
-      this.submitting = false;
-      this.message = 'Only FACULTY and STUDENT registrations are allowed.';
-      this.helpText = '';
-      this.notificationService.add({
-        title: 'Registration Blocked',
-        message: this.message,
-        level: 'warning',
-        actionRoute: '/auth/register'
-      });
-      return;
-    }
-
-    this.authService.register(this.registerForm.getRawValue() as {
-      name: string;
-      email: string;
-      password: string;
-      role: string;
+    const normalizedRole = 'STUDENT'; // Force student role on the frontend
+    
+    this.authService.register({
+      name: payload.name,
+      email: payload.email,
+      password: payload.password,
+      role: normalizedRole
     }).subscribe({
       next: () => {
         this.submitting = false;

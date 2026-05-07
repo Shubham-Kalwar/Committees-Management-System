@@ -22,4 +22,14 @@ public interface CommitteeRepository extends JpaRepository<Committee, Integer> {
     
     @Query("SELECT c FROM Committee c WHERE c.committeeInfo LIKE %:info%")
     List<Committee> findByCommitteeInfoContaining(@Param("info") String info);
+    
+    boolean existsByCommitteeName(String committeeName);
+
+    @Query("SELECT CASE WHEN COUNT(c) > 0 THEN true ELSE false END FROM Committee c WHERE LOWER(TRIM(c.committeeName)) = LOWER(TRIM(:name))")
+    boolean existsByCommitteeNameIgnoreCase(@Param("name") String committeeName);
+
+    @Query("SELECT CASE WHEN COUNT(c) > 0 THEN true ELSE false END FROM Committee c WHERE LOWER(TRIM(c.committeeName)) = LOWER(TRIM(:name)) AND c.committeeId <> :excludeId")
+    boolean existsByCommitteeNameIgnoreCaseAndIdNot(@Param("name") String committeeName, @Param("excludeId") Integer excludeId);
+
+    List<Committee> findByHeadUserId(Integer headId);
 }

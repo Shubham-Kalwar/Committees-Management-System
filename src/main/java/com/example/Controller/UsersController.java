@@ -71,7 +71,13 @@ public class UsersController {
         }
 
         if (body.containsKey("year") && body.get("year") != null) {
-            user.setYear(String.valueOf(body.get("year")).trim());
+            String year = String.valueOf(body.get("year")).trim();
+            java.util.List<String> validYears = java.util.Arrays.asList("1st Year", "2nd Year", "3rd Year", "4th Year", "Post Graduate");
+            if (!validYears.contains(year)) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(ResponceBean.error("Invalid year provided"));
+            }
+            user.setYear(year);
         }
 
         if (body.containsKey("interests") && body.get("interests") != null) {

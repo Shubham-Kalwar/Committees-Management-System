@@ -52,7 +52,7 @@ export class AnnouncementService {
     const resolvedType = this.normalizeType(data.type ?? data.announcementType);
     const resolvedReferenceId = Number(data.referenceId);
 
-    return {
+    const mappedAnnouncement: Announcement = {
       id: data.announcementId ?? data.id,
       message: data.message ?? data.title ?? '',
       type: resolvedType,
@@ -63,7 +63,10 @@ export class AnnouncementService {
       userId: data.user?.userId,
       createdAt: data.createdAt
     };
+
+    return mappedAnnouncement;
   }
+
 
   private mapCreatePayload(payload: Announcement): unknown {
     const resolvedType = this.normalizeType(payload.type);

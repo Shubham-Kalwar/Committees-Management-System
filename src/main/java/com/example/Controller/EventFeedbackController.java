@@ -1,11 +1,13 @@
 package com.example.Controller;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -60,6 +62,13 @@ public class EventFeedbackController {
         List<EventFeedback> feedbackList = eventFeedbackService.getFeedbackByEventId(eventId);
         return ResponseEntity.ok(ResponceBean.success("Feedback retrieved successfully", feedbackList));
     }
+
+    @GetMapping("/analytics/{eventId}")
+    @Operation(summary = "Get feedback analytics", description = "Get average rating, total responses, and rating distribution for an event")
+    public ResponseEntity<ResponceBean<Map<String, Object>>> getAnalytics(@PathVariable Integer eventId) {
+        Map<String, Object> analytics = eventFeedbackService.getAnalytics(eventId);
+        return ResponseEntity.ok(ResponceBean.success("Analytics retrieved successfully", analytics));
+    }
     
     @GetMapping("/event/{eventId}/average-rating")
     @Operation(summary = "Get average rating for event", description = "Get average rating for a specific event")
@@ -90,11 +99,29 @@ public class EventFeedbackController {
     }
     
     @PostMapping
-    @Operation(summary = "Submit feedback", description = "Submit new event feedback")
-    public ResponseEntity<ResponceBean<EventFeedback>> submitFeedback(@RequestBody EventFeedback feedback) {
-        EventFeedback savedFeedback = eventFeedbackService.saveFeedback(feedback);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ResponceBean.success("Feedback submitted successfully", savedFeedback));
+    @Operation(summary = "Submit feedback", description = "Submit new event feedback with duplicate checking")
+    public ResponseEntity<ResponceBean<EventFeedback>> submitFeedback(@RequestBody Map<String, Object> body) {
+        try {
+            Integer eventId = (Integer) body.get("eventId");
+            Integer userId = (Integer) body.get("userId");
+            Integer rating = (Integer) body.get("rating");
+            String comment = (String) body.get("comment");
+
+            if (eventId == null || userId == null || rating == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(ResponceBean.error("eventId, userId, and rating are required"));
+            }
+
+            EventFeedback savedFeedback = eventFeedbackService.submitFeedback(eventId, userId, rating, comment);
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(ResponceBean.success("Feedback submitted successfully", savedFeedback));
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(ResponceBean.error(e.getMessage()));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ResponceBean.error(e.getMessage()));
+        }
     }
     
     @PutMapping("/{id}")

@@ -13,4 +13,12 @@
   >
     {{ actionLabel }}
   </a>
+
+  <button
+    *ngIf="actionLabel && !actionRoute"
+    (click)="actionClick.emit()"
+    class="mt-4 inline-flex items-center rounded-xl border border-blue-300 bg-blue-50 px-3 py-2 text-sm font-semibold text-blue-700 transition-all hover:-translate-y-0.5 hover:bg-blue-100 hover:text-blue-800"
+  >
+    {{ actionLabel }}
+  </button>
 </div>

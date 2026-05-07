@@ -35,7 +35,7 @@ public class EventMedia {
     @JsonIgnoreProperties({"participants", "feedbacks", "mediaFiles", "createdAt", "updatedAt"})
     private Events event;
     
-    @Column(name = "media_url", nullable = false, length = 500, insertable = false, updatable = false)
+    @Column(name = "file_name", length = 255)
     private String fileName;
     
     @NotBlank(message = "File path is required")
@@ -48,6 +48,9 @@ public class EventMedia {
     
     @Column(name = "file_size")
     private Long fileSize;
+
+    @Column(name = "uploaded_by", length = 150)
+    private String uploadedBy;
     
     @CreationTimestamp
     @Column(name = "uploaded_at", nullable = false, updatable = false)
@@ -120,6 +123,14 @@ public class EventMedia {
     
     public void setFileSize(Long fileSize) {
         this.fileSize = fileSize;
+    }
+
+    public String getUploadedBy() {
+        return uploadedBy;
+    }
+
+    public void setUploadedBy(String uploadedBy) {
+        this.uploadedBy = uploadedBy;
     }
     
     public LocalDateTime getUploadedAt() {

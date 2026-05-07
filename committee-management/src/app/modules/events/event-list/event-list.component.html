@@ -84,7 +84,7 @@
 						class="block rounded-xl border border-emerald-200 bg-emerald-50/60 px-3 py-3 no-underline transition-all hover:-translate-y-0.5 hover:bg-emerald-50"
 					>
 						<div class="mb-1 flex flex-wrap items-center justify-between gap-2">
-							<p class="mb-0 text-sm font-semibold text-emerald-900">{{ registration.eventName || ('Event #' + registration.eventId) }}</p>
+							<p class="mb-0 text-sm font-semibold text-emerald-900">{{ registration.eventName }}</p>
 							<span
 								class="inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-semibold uppercase"
 								[ngClass]="getRegistrationStatusBadgeClass(registration.status)"
@@ -99,9 +99,14 @@
 			</ng-container>
 
 			<ng-template #emptyMyEventsState>
-				<p class="mb-0 rounded-xl border border-dashed border-slate-300 bg-slate-50 px-3 py-4 text-sm text-slate-500">
-					You have not submitted any event registration requests yet.
-				</p>
+				<div class="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-5 py-8 text-center">
+					<span class="material-icons mb-2 text-4xl text-slate-400">event_available</span>
+					<h4 class="text-base font-bold text-slate-800">You haven't registered for any events yet.</h4>
+					<p class="mb-4 text-sm text-slate-500">Browse the upcoming events below and register to get started.</p>
+					<button type="button" class="inline-flex items-center rounded-xl bg-slate-800 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-slate-700" onclick="window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'})">
+						Explore Events
+					</button>
+				</div>
 			</ng-template>
 		</div>
 	</article>
@@ -131,6 +136,13 @@
 						<p class="mb-0 inline-flex w-fit items-center rounded-full bg-blue-50 px-2.5 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-blue-600">
 							{{ formatEventDate(event.eventDate) }}
 						</p>
+						<span
+							*ngIf="getEventCategory(event) as cat"
+							class="inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold uppercase"
+							[ngClass]="cat.class"
+						>
+							{{ cat.name }}
+						</span>
 						<span
 							class="inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold uppercase"
 							[ngClass]="getEventStatusBadgeClass(event.status)"

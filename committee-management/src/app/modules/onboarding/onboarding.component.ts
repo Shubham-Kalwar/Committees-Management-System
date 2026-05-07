@@ -53,7 +53,6 @@ export class OnboardingComponent implements OnInit {
     '2nd Year',
     '3rd Year',
     '4th Year',
-    '5th Year',
     'Post Graduate'
   ];
 
@@ -84,8 +83,8 @@ export class OnboardingComponent implements OnInit {
   ngOnInit(): void {
     this.profileForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(2)]],
-      department: ['', Validators.required],
-      year: ['', Validators.required]
+      department: [null, Validators.required],
+      year: [null, [Validators.required, (control: any) => this.years.includes(control.value) ? null : { invalidYear: true }]]
     });
 
     // Load current profile data

@@ -1,0 +1,74 @@
+<div *ngIf="canUpload" class="media-upload-container">
+	<!-- Drag & Drop Zone -->
+	<div
+		class="drop-zone"
+		[class.drag-over]="isDragging"
+		(dragover)="onDragOver($event)"
+		(dragleave)="onDragLeave($event)"
+		(drop)="onDrop($event)"
+		(click)="fileInput.click()"
+	>
+		<input
+			#fileInput
+			type="file"
+			multiple
+			accept=".jpg,.jpeg,.png,.gif,.webp,.mp4,.webm,.mov"
+			class="hidden"
+			(change)="onFileSelect($event)"
+		/>
+		<div class="drop-zone-content">
+			<span class="material-icons drop-icon">cloud_upload</span>
+			<p class="drop-title">Drag & drop files here</p>
+			<p class="drop-subtitle">or click to browse · JPG, PNG, GIF, MP4, WebM · Max 50MB</p>
+		</div>
+	</div>
+
+	<!-- Previews -->
+	<div *ngIf="previews.length > 0" class="preview-grid">
+		<div *ngFor="let preview of previews; let i = index" class="preview-card">
+			<div class="preview-media">
+				<img *ngIf="preview.type === 'IMAGE'" [src]="preview.url" alt="Preview" class="preview-img" />
+				<video *ngIf="preview.type === 'VIDEO'" [src]="preview.url" class="preview-img" muted></video>
+				<span *ngIf="preview.type === 'VIDEO'" class="video-badge">
+					<span class="material-icons text-xs">videocam</span> Video
+				</span>
+			</div>
+			<div class="preview-info">
+				<p class="preview-name" [title]="preview.file.name">{{ preview.file.name }}</p>
+				<p class="preview-size">{{ formatSize(preview.file.size) }}</p>
+			</div>
+			<button type="button" class="preview-remove" (click)="removeFile(i)" [disabled]="uploading">
+				<span class="material-icons">close</span>
+			</button>
+		</div>
+	</div>
+
+	<!-- Upload Progress -->
+	<div *ngIf="uploading" class="progress-bar-container">
+		<div class="progress-bar">
+			<div class="progress-fill" [style.width.%]="uploadProgress"></div>
+		</div>
+		<p class="progress-text">Uploading... {{ uploadProgress }}%</p>
+	</div>
+
+	<!-- Actions -->
+	<div *ngIf="previews.length > 0 && !uploading" class="upload-actions">
+		<button
+			type="button"
+			class="btn-upload"
+			(click)="uploadAll()"
+			[disabled]="uploading"
+		>
+			<span class="material-icons text-base">upload</span>
+			Upload {{ previews.length }} file(s)
+		</button>
+	</div>
+
+	<!-- Messages -->
+	<p *ngIf="successMessage" class="msg-success">
+		<span class="material-icons text-sm align-middle mr-1">check_circle</span>{{ successMessage }}
+	</p>
+	<p *ngIf="errorMessage" class="msg-error">
+		<span class="material-icons text-sm align-middle mr-1">error</span>{{ errorMessage }}
+	</p>
+</div>

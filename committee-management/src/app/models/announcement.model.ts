@@ -2,6 +2,7 @@ export type AnnouncementType = 'event' | 'task' | 'general';
 
 export interface Announcement {
   id?: number;
+  title?: string;
   message: string;
   type?: AnnouncementType;
   referenceId?: number | null;

@@ -124,11 +124,10 @@
 							<tr *ngFor="let item of records" class="attendance-row transition-colors">
 								<td class="px-4 py-3.5">
 									<p class="mb-0 font-medium text-slate-800">{{ resolveUserName(item) }}</p>
-									<p class="mb-0 text-xs text-slate-500">User ID: {{ item.userId }}</p>
 								</td>
 								<td class="px-4 py-3.5">
 									<p class="mb-0 font-medium text-slate-800">{{ resolveEventTitle(item) }}</p>
-									<p class="mb-0 text-xs text-slate-500">Event ID: {{ item.eventId }}</p>
+									<p class="mb-0 text-xs text-slate-500">Method: {{ item.attendanceMethod || 'MANUAL' }}</p>
 								</td>
 								<td class="px-4 py-3.5">
 									<span
@@ -150,8 +149,8 @@
 		<ng-template #emptyAttendanceState>
 			<app-empty-state
 				icon="fact_check"
-				title="No attendance records"
-				subtitle="Records will appear after event participation"
+				title="No attendance records available."
+				subtitle="Your attendance records will appear here after event participation."
 			></app-empty-state>
 		</ng-template>
 	</div>

@@ -18,7 +18,8 @@ public interface EventMediaService {
     List<EventMedia> searchEventMediaByFileName(String fileName);
     List<EventMedia> getEventMediaByMaxSize(Long maxSize);
     EventMedia saveEventMedia(EventMedia eventMedia);
-    EventMedia uploadMedia(Integer eventId, EventMedia.MediaType mediaType, MultipartFile file);
+    EventMedia uploadMedia(Integer eventId, EventMedia.MediaType mediaType, MultipartFile file, String uploadedBy);
     void deleteEventMedia(Integer id);
+    void deleteMediaWithFile(Integer id);
     EventMedia updateEventMedia(Integer id, EventMedia eventMediaDetails);
 }

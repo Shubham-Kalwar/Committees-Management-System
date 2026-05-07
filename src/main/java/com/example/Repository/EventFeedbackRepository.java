@@ -19,6 +19,8 @@ public interface EventFeedbackRepository extends JpaRepository<EventFeedback, In
     List<EventFeedback> findByUser(Users user);
     
     Optional<EventFeedback> findByEventAndUser(Events event, Users user);
+
+    boolean existsByEventAndUser(Events event, Users user);
     
     List<EventFeedback> findByRating(Integer rating);
     
@@ -27,6 +29,12 @@ public interface EventFeedbackRepository extends JpaRepository<EventFeedback, In
     
     @Query("SELECT AVG(ef.rating) FROM EventFeedback ef WHERE ef.event.eventId = :eventId")
     Double getAverageRatingByEventId(@Param("eventId") Integer eventId);
+
+    @Query("SELECT COUNT(ef) FROM EventFeedback ef WHERE ef.event.eventId = :eventId")
+    Long countByEventId(@Param("eventId") Integer eventId);
+
+    @Query("SELECT ef.rating, COUNT(ef) FROM EventFeedback ef WHERE ef.event.eventId = :eventId GROUP BY ef.rating ORDER BY ef.rating")
+    List<Object[]> getRatingDistributionByEventId(@Param("eventId") Integer eventId);
     
     @Query("SELECT ef FROM EventFeedback ef WHERE ef.rating >= :minRating")
     List<EventFeedback> findByRatingGreaterThanEqual(@Param("minRating") Integer minRating);

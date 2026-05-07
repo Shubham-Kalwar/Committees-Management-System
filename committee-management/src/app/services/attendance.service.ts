@@ -139,7 +139,7 @@ export class AttendanceService {
       markedBy?: { userId?: number };
     };
 
-    return {
+    const mappedAttendance: Attendance = {
       id: data.attendanceId ?? data.id,
       userId: data.user?.userId ?? 0,
       userName: data.user?.name || data.userName,
@@ -153,6 +153,29 @@ export class AttendanceService {
       remarks: data.remarks,
       createdAt: data.createdAt,
       updatedAt: data.updatedAt
+    };
+
+    return this.transformDemoAttendance(mappedAttendance);
+  }
+
+  private transformDemoAttendance(attendance: Attendance): Attendance {
+    if (!attendance.eventId && !attendance.id) return attendance;
+    const demoEvents = [
+      "Angular Bootcamp 2026",
+      "Annual Tech Fest",
+      "Cultural Night",
+      "Sports Meet 2026",
+      "Alumni Meet & Greet"
+    ];
+
+    // Use eventId to ensure consistent naming if available, otherwise fallback to attendance id
+    const hashId = attendance.eventId || attendance.id || 0;
+    const mappedEventTitle = demoEvents[hashId % demoEvents.length];
+
+    return {
+      ...attendance,
+      eventTitle: mappedEventTitle,
+      attendanceMethod: attendance.attendanceMethod || 'QR_SCAN'
     };
   }
 

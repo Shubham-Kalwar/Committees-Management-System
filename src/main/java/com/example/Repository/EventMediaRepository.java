@@ -16,7 +16,7 @@ public interface EventMediaRepository extends JpaRepository<EventMedia, Integer>
     
     List<EventMedia> findByFileType(EventMedia.MediaType fileType);
     
-    @Query("SELECT em FROM EventMedia em WHERE em.event.eventId = :eventId")
+    @Query("SELECT em FROM EventMedia em WHERE em.event.eventId = :eventId ORDER BY em.uploadedAt DESC")
     List<EventMedia> findByEventId(@Param("eventId") Integer eventId);
     
     @Query("SELECT em FROM EventMedia em WHERE em.fileName LIKE %:fileName%")
@@ -27,4 +27,7 @@ public interface EventMediaRepository extends JpaRepository<EventMedia, Integer>
     
     @Query("SELECT em FROM EventMedia em WHERE em.event.eventId = :eventId AND em.fileType = :fileType")
     List<EventMedia> findByEventIdAndFileType(@Param("eventId") Integer eventId, @Param("fileType") EventMedia.MediaType fileType);
+
+    @Query("SELECT COUNT(em) FROM EventMedia em WHERE em.event.eventId = :eventId")
+    Long countByEventId(@Param("eventId") Integer eventId);
 }

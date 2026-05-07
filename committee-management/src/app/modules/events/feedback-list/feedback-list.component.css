@@ -1,0 +1,143 @@
+.feedback-list-container {
+	width: 100%;
+}
+
+.list-loading,
+.list-error {
+	padding: 1.5rem;
+	text-align: center;
+}
+
+.list-error {
+	color: #991b1b;
+	background: #fef2f2;
+	border: 1px solid #fecaca;
+	border-radius: 0.75rem;
+	font-size: 0.85rem;
+	font-weight: 600;
+}
+
+/* Empty */
+.list-empty {
+	text-align: center;
+	padding: 2.5rem 1.5rem;
+	border: 1px dashed #cbd5e1;
+	border-radius: 1rem;
+	background: #f8fafc;
+}
+
+.list-empty-icon {
+	font-size: 2.5rem;
+	color: #94a3b8;
+	margin-bottom: 0.4rem;
+}
+
+.list-empty-title {
+	font-size: 0.95rem;
+	font-weight: 700;
+	color: #334155;
+	margin: 0 0 0.2rem;
+}
+
+.list-empty-subtitle {
+	font-size: 0.78rem;
+	color: #94a3b8;
+	margin: 0;
+}
+
+/* Header */
+.list-header {
+	margin-bottom: 0.75rem;
+}
+
+.list-count {
+	font-size: 0.72rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	color: #64748b;
+	background: #f1f5f9;
+	border: 1px solid #e2e8f0;
+	padding: 0.3rem 0.65rem;
+	border-radius: 0.5rem;
+}
+
+/* Items */
+.list-items {
+	display: flex;
+	flex-direction: column;
+	gap: 0.65rem;
+}
+
+.feedback-card {
+	border: 1px solid #e2e8f0;
+	border-radius: 0.85rem;
+	padding: 0.85rem 1rem;
+	background: #fff;
+	transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.feedback-card:hover {
+	transform: translateY(-1px);
+	box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
+}
+
+.feedback-top {
+	display: flex;
+	align-items: center;
+	gap: 0.65rem;
+}
+
+.user-avatar {
+	width: 34px;
+	height: 34px;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: #fff;
+	font-size: 0.82rem;
+	font-weight: 800;
+	flex-shrink: 0;
+}
+
+.user-info {
+	flex: 1;
+	min-width: 0;
+}
+
+.user-name {
+	margin: 0;
+	font-size: 0.82rem;
+	font-weight: 700;
+	color: #1e293b;
+}
+
+.feedback-date {
+	margin: 0;
+	font-size: 0.68rem;
+	color: #94a3b8;
+}
+
+.feedback-stars {
+	display: flex;
+	gap: 1px;
+	flex-shrink: 0;
+}
+
+.star-icon {
+	font-size: 1rem;
+	color: #cbd5e1;
+}
+
+.star-filled {
+	color: #f59e0b;
+}
+
+.feedback-comment {
+	margin: 0.6rem 0 0;
+	font-size: 0.82rem;
+	line-height: 1.55;
+	color: #475569;
+	padding-left: 2.65rem;
+}

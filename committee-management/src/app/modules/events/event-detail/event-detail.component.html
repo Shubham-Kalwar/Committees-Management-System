@@ -50,44 +50,110 @@
 			{{ infoMessage }}
 		</p>
 
-		<div class="mb-3 flex flex-wrap items-center gap-2">
-			<span class="inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold uppercase" [ngClass]="getStatusBadgeClass(event.status)">
-				{{ event.status || 'UNKNOWN' }}
-			</span>
-			<span
-				*ngIf="registrationStatus"
-				class="inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold uppercase"
-				[ngClass]="getRegistrationStatusBadgeClass(registrationStatus)"
+		<!-- Tabs -->
+		<div class="event-tabs">
+			<button
+				type="button"
+				class="event-tab"
+				[class.tab-active]="activeTab === 'details'"
+				(click)="setTab('details')"
 			>
-				{{ getRegistrationStatusLabel(registrationStatus) }}
-			</span>
-			<span class="inline-flex items-center rounded-full bg-blue-50 px-2.5 py-1 text-xs font-semibold uppercase text-blue-700">
-				{{ formatDateTime(event.eventDate) }}
-			</span>
+				<span class="material-icons tab-icon">info</span>
+				Details
+			</button>
+			<button
+				type="button"
+				class="event-tab"
+				[class.tab-active]="activeTab === 'media'"
+				(click)="setTab('media')"
+			>
+				<span class="material-icons tab-icon">photo_library</span>
+				Media
+			</button>
+			<button
+				type="button"
+				class="event-tab"
+				[class.tab-active]="activeTab === 'feedback'"
+				(click)="setTab('feedback')"
+			>
+				<span class="material-icons tab-icon">rate_review</span>
+				Feedback
+			</button>
 		</div>
 
-		<p class="mb-4 text-sm leading-relaxed text-slate-600">{{ event.description || 'No description available.' }}</p>
+		<!-- Details Tab -->
+		<div *ngIf="activeTab === 'details'" class="tab-content">
+			<div class="mb-3 flex flex-wrap items-center gap-2">
+				<span class="inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold uppercase" [ngClass]="getStatusBadgeClass(event.status)">
+					{{ event.status || 'UNKNOWN' }}
+				</span>
+				<span
+					*ngIf="registrationStatus"
+					class="inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold uppercase"
+					[ngClass]="getRegistrationStatusBadgeClass(registrationStatus)"
+				>
+					{{ getRegistrationStatusLabel(registrationStatus) }}
+				</span>
+				<span class="inline-flex items-center rounded-full bg-blue-50 px-2.5 py-1 text-xs font-semibold uppercase text-blue-700">
+					{{ formatDateTime(event.eventDate) }}
+				</span>
+			</div>
 
-		<div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-			<article class="detail-meta-card">
-				<p class="detail-meta-label">Date</p>
-				<p class="detail-meta-value">{{ formatDateTime(event.eventDate) }}</p>
-			</article>
+			<p class="mb-4 text-sm leading-relaxed text-slate-600">{{ event.description || 'No description available.' }}</p>
 
-			<article class="detail-meta-card">
-				<p class="detail-meta-label">Location</p>
-				<p class="detail-meta-value">{{ event.location || '-' }}</p>
-			</article>
+			<div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+				<article class="detail-meta-card">
+					<p class="detail-meta-label">Date</p>
+					<p class="detail-meta-value">{{ formatDateTime(event.eventDate) }}</p>
+				</article>
 
-			<article class="detail-meta-card">
-				<p class="detail-meta-label">Max Participants</p>
-				<p class="detail-meta-value">{{ event.maxParticipants || '-' }}</p>
-			</article>
+				<article class="detail-meta-card">
+					<p class="detail-meta-label">Location</p>
+					<p class="detail-meta-value">{{ event.location || '-' }}</p>
+				</article>
 
-			<article class="detail-meta-card">
-				<p class="detail-meta-label">Committee ID</p>
-				<p class="detail-meta-value">{{ event.committeeId || '-' }}</p>
-			</article>
+				<article class="detail-meta-card">
+					<p class="detail-meta-label">Max Participants</p>
+					<p class="detail-meta-value">{{ event.maxParticipants || '-' }}</p>
+				</article>
+
+				<article class="detail-meta-card">
+					<p class="detail-meta-label">Committee ID</p>
+					<p class="detail-meta-value">{{ event.committeeId || '-' }}</p>
+				</article>
+			</div>
+		</div>
+
+		<!-- Media Tab -->
+		<div *ngIf="activeTab === 'media'" class="tab-content">
+			<app-media-upload
+				*ngIf="canManageMedia"
+				[eventId]="requestedEventId!"
+				(uploaded)="onMediaUploaded()"
+			></app-media-upload>
+			<app-media-gallery
+				[eventId]="requestedEventId!"
+			></app-media-gallery>
+		</div>
+
+		<!-- Feedback Tab -->
+		<div *ngIf="activeTab === 'feedback'" class="tab-content">
+			<div class="feedback-layout">
+				<div class="feedback-main">
+					<app-feedback-form
+						[eventId]="requestedEventId!"
+						(submitted)="onFeedbackSubmitted()"
+					></app-feedback-form>
+					<app-feedback-list
+						[eventId]="requestedEventId!"
+					></app-feedback-list>
+				</div>
+				<div class="feedback-sidebar">
+					<app-feedback-analytics
+						[eventId]="requestedEventId!"
+					></app-feedback-analytics>
+				</div>
+			</div>
 		</div>
 	</article>
 </section>

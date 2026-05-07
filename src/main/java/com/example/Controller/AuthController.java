@@ -100,6 +100,14 @@ public class AuthController {
             String token = jwtUtil.generateToken(loginRequest.getEmail(), login.getRole());
 
             Map<String, Object> response = new HashMap<>();
+            
+            // Check account status in users entity
+            Users user = usersRepository.findByLoginEmail(loginRequest.getEmail()).orElse(null);
+            if (user != null && !"ACTIVE".equalsIgnoreCase(user.getAccountStatus())) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(new ResponceBean<>(false, "Account not activated. Please contact admin."));
+            }
+
             response.put("token", token);
             response.put("email", loginRequest.getEmail());
             response.put("role", login.getRole());
@@ -115,19 +123,8 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<ResponceBean<Map<String, Object>>> register(@RequestBody RegisterRequest registerRequest) {
         try {
-            String requestedRole = registerRequest.getRole() == null
-                    ? "STUDENT"
-                    : registerRequest.getRole().trim().toUpperCase();
-
-            if (!Set.of("STUDENT", "FACULTY", "ADMIN").contains(requestedRole)) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new ResponceBean<>(false, "Invalid role. Allowed roles are STUDENT, FACULTY, ADMIN."));
-            }
-
-            if ("ADMIN".equals(requestedRole) && loginRepository.existsByRoleIgnoreCase("ADMIN")) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new ResponceBean<>(false, "Only one ADMIN account is allowed."));
-            }
+            // Force role to STUDENT securely
+            String requestedRole = "STUDENT";
 
             // Check if email already exists
             if (loginRepository.existsByEmail(registerRequest.getEmail())) {

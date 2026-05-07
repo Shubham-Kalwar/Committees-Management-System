@@ -1,0 +1,76 @@
+<div class="analytics-container">
+	<!-- Loading -->
+	<div *ngIf="loading" class="analytics-loading">
+		<div class="inline-flex items-center gap-2 text-sm text-slate-500">
+			<span class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-slate-300 border-t-blue-600"></span>
+			Loading analytics...
+		</div>
+	</div>
+
+	<!-- Error -->
+	<p *ngIf="!loading && errorMessage" class="analytics-error">{{ errorMessage }}</p>
+
+	<!-- Content -->
+	<div *ngIf="!loading && analytics" class="analytics-content">
+		<!-- Summary Cards -->
+		<div class="summary-row">
+			<!-- Average Rating Card -->
+			<div class="summary-card rating-card">
+				<div class="rating-big">{{ averageDisplay }}</div>
+				<div class="rating-stars-row">
+					<span
+						*ngFor="let star of stars"
+						class="material-icons rating-star"
+						[class.star-filled]="isStarFilled(star)"
+					>
+						{{ isStarFilled(star) ? 'star' : 'star_border' }}
+					</span>
+				</div>
+				<p class="summary-label">Average Rating</p>
+			</div>
+
+			<!-- Total Responses Card -->
+			<div class="summary-card responses-card">
+				<div class="responses-big">{{ totalResponses }}</div>
+				<p class="summary-label">Total Responses</p>
+			</div>
+		</div>
+
+		<!-- Rating Distribution Bars -->
+		<div class="distribution-section" *ngIf="totalResponses > 0">
+			<h4 class="distribution-title">Rating Distribution</h4>
+			<div class="distribution-bars">
+				<div *ngFor="let rating of [5, 4, 3, 2, 1]" class="dist-row">
+					<span class="dist-label">{{ rating }} ★</span>
+					<div class="dist-bar-track">
+						<div
+							class="dist-bar-fill"
+							[style.width.%]="getDistributionPercentage(rating)"
+							[class.dist-5]="rating === 5"
+							[class.dist-4]="rating === 4"
+							[class.dist-3]="rating === 3"
+							[class.dist-2]="rating === 2"
+							[class.dist-1]="rating === 1"
+						></div>
+					</div>
+					<span class="dist-count">{{ getDistributionCount(rating) }}</span>
+					<span class="dist-percent">{{ getDistributionPercentage(rating) }}%</span>
+				</div>
+			</div>
+		</div>
+
+		<!-- Chart -->
+		<div class="chart-section" *ngIf="totalResponses > 0">
+			<h4 class="chart-title">Response Chart</h4>
+			<div class="chart-wrapper">
+				<canvas #distributionChart></canvas>
+			</div>
+		</div>
+
+		<!-- No data -->
+		<div *ngIf="totalResponses === 0" class="no-data">
+			<span class="material-icons no-data-icon">insights</span>
+			<p class="no-data-text">No feedback data to analyze yet.</p>
+		</div>
+	</div>
+</div>

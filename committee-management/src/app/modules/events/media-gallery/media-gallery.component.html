@@ -1,0 +1,110 @@
+<div class="gallery-container">
+	<!-- Loading -->
+	<div *ngIf="loading" class="gallery-loading">
+		<div class="inline-flex items-center gap-2 text-sm text-slate-500">
+			<span class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-slate-300 border-t-blue-600"></span>
+			Loading media...
+		</div>
+	</div>
+
+	<!-- Error -->
+	<p *ngIf="!loading && errorMessage" class="gallery-error">{{ errorMessage }}</p>
+
+	<!-- Empty -->
+	<div *ngIf="!loading && !errorMessage && mediaItems.length === 0" class="gallery-empty">
+		<span class="material-icons gallery-empty-icon">photo_library</span>
+		<p class="gallery-empty-title">No media uploaded yet</p>
+		<p class="gallery-empty-subtitle">Photos and videos will appear here once uploaded.</p>
+	</div>
+
+	<!-- Stats -->
+	<div *ngIf="!loading && mediaItems.length > 0" class="gallery-stats">
+		<span class="stat-badge">
+			<span class="material-icons text-xs">photo</span> {{ imageCount }} Images
+		</span>
+		<span class="stat-badge">
+			<span class="material-icons text-xs">videocam</span> {{ videoCount }} Videos
+		</span>
+		<span class="stat-badge stat-total">
+			{{ mediaItems.length }} Total
+		</span>
+	</div>
+
+	<!-- Grid -->
+	<div *ngIf="!loading && mediaItems.length > 0" class="gallery-grid">
+		<div
+			*ngFor="let media of mediaItems"
+			class="gallery-item"
+			(click)="openLightbox(media)"
+		>
+			<div class="gallery-thumb">
+				<img
+					*ngIf="media.fileType === 'IMAGE'"
+					[src]="getMediaUrl(media)"
+					[alt]="media.fileName"
+					class="thumb-img"
+					loading="lazy"
+				/>
+				<video
+					*ngIf="media.fileType === 'VIDEO'"
+					[src]="getMediaUrl(media)"
+					class="thumb-img"
+					muted
+					preload="metadata"
+				></video>
+				<span *ngIf="media.fileType === 'VIDEO'" class="thumb-video-badge">
+					<span class="material-icons">play_circle_filled</span>
+				</span>
+			</div>
+
+			<div class="gallery-item-info">
+				<p class="item-name" [title]="media.fileName">{{ media.fileName }}</p>
+				<p class="item-meta">{{ formatSize(media.fileSize) }} · {{ formatDate(media.uploadedAt) }}</p>
+			</div>
+
+			<button
+				*ngIf="canDelete"
+				type="button"
+				class="gallery-delete-btn"
+				(click)="deleteMedia(media.mediaId, $event)"
+				[disabled]="isDeleting(media.mediaId)"
+				title="Delete media"
+			>
+				<span class="material-icons" *ngIf="!isDeleting(media.mediaId)">delete</span>
+				<span *ngIf="isDeleting(media.mediaId)" class="inline-block h-3.5 w-3.5 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
+			</button>
+		</div>
+	</div>
+
+	<!-- Lightbox -->
+	<div *ngIf="selectedMedia" class="lightbox-overlay" (click)="onLightboxBackdrop($event)">
+		<div class="lightbox-content">
+			<button type="button" class="lightbox-close" (click)="closeLightbox()">
+				<span class="material-icons">close</span>
+			</button>
+
+			<img
+				*ngIf="selectedMedia.fileType === 'IMAGE'"
+				[src]="getMediaUrl(selectedMedia)"
+				[alt]="selectedMedia.fileName"
+				class="lightbox-media"
+			/>
+			<video
+				*ngIf="selectedMedia.fileType === 'VIDEO'"
+				[src]="getMediaUrl(selectedMedia)"
+				class="lightbox-media"
+				controls
+				autoplay
+			></video>
+
+			<div class="lightbox-info">
+				<p class="lightbox-name">{{ selectedMedia.fileName }}</p>
+				<p class="lightbox-meta">
+					{{ formatSize(selectedMedia.fileSize) }}
+					<span *ngIf="selectedMedia.uploadedBy"> · Uploaded by {{ selectedMedia.uploadedBy }}</span>
+					· {{ formatDate(selectedMedia.uploadedAt) }}
+				</p>
+			</div>
+		</div>
+	</div>
+</div>

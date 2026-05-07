@@ -1,0 +1,258 @@
+.gallery-container {
+	width: 100%;
+}
+
+.gallery-loading,
+.gallery-error {
+	padding: 1.5rem;
+	text-align: center;
+}
+
+.gallery-error {
+	color: #991b1b;
+	background: #fef2f2;
+	border: 1px solid #fecaca;
+	border-radius: 0.75rem;
+	font-size: 0.85rem;
+	font-weight: 600;
+}
+
+/* Empty state */
+.gallery-empty {
+	text-align: center;
+	padding: 3rem 1.5rem;
+	border: 1px dashed #cbd5e1;
+	border-radius: 1rem;
+	background: #f8fafc;
+}
+
+.gallery-empty-icon {
+	font-size: 3rem;
+	color: #94a3b8;
+	margin-bottom: 0.5rem;
+}
+
+.gallery-empty-title {
+	font-size: 1rem;
+	font-weight: 700;
+	color: #334155;
+	margin: 0 0 0.25rem;
+}
+
+.gallery-empty-subtitle {
+	font-size: 0.8rem;
+	color: #94a3b8;
+	margin: 0;
+}
+
+/* Stats */
+.gallery-stats {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	margin-bottom: 1rem;
+}
+
+.stat-badge {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.25rem;
+	font-size: 0.72rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	padding: 0.3rem 0.65rem;
+	border-radius: 0.5rem;
+	background: #f1f5f9;
+	color: #475569;
+	border: 1px solid #e2e8f0;
+}
+
+.stat-total {
+	background: #eff6ff;
+	color: #2563eb;
+	border-color: #bfdbfe;
+}
+
+/* Grid */
+.gallery-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+	gap: 0.75rem;
+}
+
+.gallery-item {
+	position: relative;
+	border: 1px solid #e2e8f0;
+	border-radius: 0.85rem;
+	overflow: hidden;
+	background: #fff;
+	cursor: pointer;
+	transition: all 0.25s ease;
+}
+
+.gallery-item:hover {
+	transform: translateY(-3px);
+	box-shadow: 0 12px 28px rgba(15, 23, 42, 0.12);
+}
+
+.gallery-thumb {
+	position: relative;
+	width: 100%;
+	aspect-ratio: 1;
+	overflow: hidden;
+	background: #f1f5f9;
+}
+
+.thumb-img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	transition: transform 0.3s ease;
+}
+
+.gallery-item:hover .thumb-img {
+	transform: scale(1.05);
+}
+
+.thumb-video-badge {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	color: rgba(255, 255, 255, 0.9);
+	filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.4));
+}
+
+.thumb-video-badge .material-icons {
+	font-size: 2.5rem;
+}
+
+.gallery-item-info {
+	padding: 0.45rem 0.55rem;
+}
+
+.item-name {
+	margin: 0;
+	font-size: 0.72rem;
+	font-weight: 600;
+	color: #334155;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.item-meta {
+	margin: 0.15rem 0 0;
+	font-size: 0.62rem;
+	color: #94a3b8;
+}
+
+/* Delete button */
+.gallery-delete-btn {
+	position: absolute;
+	top: 6px;
+	right: 6px;
+	background: rgba(239, 68, 68, 0.85);
+	border: none;
+	border-radius: 50%;
+	color: #fff;
+	width: 26px;
+	height: 26px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	opacity: 0;
+	transition: all 0.2s;
+}
+
+.gallery-item:hover .gallery-delete-btn {
+	opacity: 1;
+}
+
+.gallery-delete-btn .material-icons {
+	font-size: 16px;
+}
+
+.gallery-delete-btn:hover {
+	background: #dc2626;
+	transform: scale(1.1);
+}
+
+/* Lightbox */
+.lightbox-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: 9999;
+	background: rgba(0, 0, 0, 0.85);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 2rem;
+	animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+	from { opacity: 0; }
+	to { opacity: 1; }
+}
+
+.lightbox-content {
+	position: relative;
+	max-width: 90vw;
+	max-height: 90vh;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.lightbox-close {
+	position: absolute;
+	top: -12px;
+	right: -12px;
+	z-index: 10;
+	background: rgba(255, 255, 255, 0.15);
+	border: 1px solid rgba(255, 255, 255, 0.3);
+	border-radius: 50%;
+	color: #fff;
+	width: 36px;
+	height: 36px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	transition: background 0.2s;
+}
+
+.lightbox-close:hover {
+	background: rgba(255, 255, 255, 0.3);
+}
+
+.lightbox-media {
+	max-width: 100%;
+	max-height: 75vh;
+	border-radius: 0.75rem;
+	box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.lightbox-info {
+	margin-top: 1rem;
+	text-align: center;
+}
+
+.lightbox-name {
+	color: #fff;
+	font-size: 0.9rem;
+	font-weight: 700;
+	margin: 0 0 0.25rem;
+}
+
+.lightbox-meta {
+	color: rgba(255, 255, 255, 0.65);
+	font-size: 0.75rem;
+	margin: 0;
+}

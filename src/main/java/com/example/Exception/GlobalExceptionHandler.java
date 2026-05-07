@@ -4,6 +4,7 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -23,6 +24,19 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ResponceBean<String>> handleResourceNotFound(ResourceNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(ResponceBean.error("Resource not found", ex.getMessage()));
+    }
+
+    @ExceptionHandler(DuplicateCommitteeException.class)
+    public ResponseEntity<ResponceBean<String>> handleDuplicateCommittee(DuplicateCommitteeException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(ResponceBean.error("Duplicate entry", ex.getMessage()));
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ResponceBean<String>> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
+        log.warn("Data integrity violation: {}", ex.getMostSpecificCause().getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(ResponceBean.error("Data conflict", "A record with the given data already exists or violates a constraint."));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

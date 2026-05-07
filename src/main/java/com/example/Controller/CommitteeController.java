@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.Entity.Committee;
+import com.example.Exception.DuplicateCommitteeException;
+import com.example.Exception.ResourceNotFoundException;
 import com.example.Response.ResponceBean;
 import com.example.Service.CommitteeService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -25,6 +27,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/committees")
@@ -70,26 +73,35 @@ public class CommitteeController {
     }
     
     @PostMapping
-    @Operation(summary = "Create new committee", description = "Create a new committee")
-    public ResponseEntity<ResponceBean<Committee>> createCommittee(@RequestBody Committee committee) {
-        Committee savedCommittee = committeeService.saveCommittee(committee);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ResponceBean.success("Committee created successfully", savedCommittee));
+    @Operation(summary = "Create new committee", description = "Create a new committee (Admin only)")
+    public ResponseEntity<ResponceBean<Committee>> createCommittee(@Valid @RequestBody Committee committee) {
+        try {
+            Committee savedCommittee = committeeService.saveCommittee(committee);
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(ResponceBean.success("Committee created successfully", savedCommittee));
+        } catch (DuplicateCommitteeException ex) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(ResponceBean.error(ex.getMessage()));
+        }
     }
     
     @PutMapping("/{id}")
-    @Operation(summary = "Update committee", description = "Update an existing committee")
-    public ResponseEntity<ResponceBean<Committee>> updateCommittee(@PathVariable Integer id, @RequestBody Committee committeeDetails) {
-        Committee updatedCommittee = committeeService.updateCommittee(id, committeeDetails);
-        if (updatedCommittee != null) {
+    @Operation(summary = "Update committee", description = "Update an existing committee (Admin only)")
+    public ResponseEntity<ResponceBean<Committee>> updateCommittee(@PathVariable Integer id, @Valid @RequestBody Committee committeeDetails) {
+        try {
+            Committee updatedCommittee = committeeService.updateCommittee(id, committeeDetails);
             return ResponseEntity.ok(ResponceBean.success("Committee updated successfully", updatedCommittee));
+        } catch (ResourceNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(ResponceBean.error(ex.getMessage()));
+        } catch (DuplicateCommitteeException ex) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(ResponceBean.error(ex.getMessage()));
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(ResponceBean.error("Committee not found"));
     }
 
     @PatchMapping("/{id}")
-    @Operation(summary = "Patch committee", description = "Partially update a committee")
+    @Operation(summary = "Patch committee", description = "Partially update a committee (Admin only)")
     public ResponseEntity<ResponceBean<Committee>> patchCommittee(@PathVariable Integer id, @RequestBody java.util.Map<String, Object> updates) {
         Optional<Committee> existing = committeeService.getCommitteeById(id);
         if (existing.isEmpty()) {
@@ -101,20 +113,22 @@ public class CommitteeController {
             Committee patched = objectMapper.updateValue(existing.get(), updates);
             Committee saved = committeeService.saveCommittee(patched);
             return ResponseEntity.ok(ResponceBean.success("Committee patched successfully", saved));
+        } catch (DuplicateCommitteeException ex) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(ResponceBean.error(ex.getMessage()));
         } catch (IllegalArgumentException | JsonProcessingException ex) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponceBean.error("Invalid patch payload", ex.getMessage()));
         }
     }
     
     @DeleteMapping("/{id}")
-    @Operation(summary = "Delete committee", description = "Delete a committee")
+    @Operation(summary = "Delete committee", description = "Delete a committee (Admin only)")
     public ResponseEntity<ResponceBean<String>> deleteCommittee(@PathVariable Integer id) {
-        Optional<Committee> committee = committeeService.getCommitteeById(id);
-        if (committee.isPresent()) {
+        try {
             committeeService.deleteCommittee(id);
             return ResponseEntity.ok(ResponceBean.success("Committee deleted successfully"));
+        } catch (ResourceNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(ResponceBean.error(ex.getMessage()));
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(ResponceBean.error("Committee not found"));
     }
 }

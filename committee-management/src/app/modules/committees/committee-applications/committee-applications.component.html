@@ -1,0 +1,154 @@
+<section class="w-full space-y-6">
+	<!-- Header & Committee Selector -->
+	<div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+		<div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+			<div>
+				<h2 class="text-2xl font-bold text-slate-800">Committee Applications</h2>
+				<p class="text-sm text-slate-500 mt-1">Review and manage student applications for your committees.</p>
+			</div>
+			
+			<div class="flex-shrink-0 min-w-[250px]">
+				<label for="committeeSelect" class="sr-only">Select Committee</label>
+				<div class="relative">
+					<select 
+						id="committeeSelect" 
+						[ngModel]="selectedCommitteeId"
+						(ngModelChange)="selectCommittee($event)"
+						[disabled]="isLoadingCommittees || committees.length === 0"
+						class="w-full appearance-none rounded-xl border border-slate-300 bg-slate-50 py-2.5 pl-4 pr-10 text-sm font-medium text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:opacity-60"
+					>
+						<option [ngValue]="null" disabled>Select a committee</option>
+						<option *ngFor="let c of committees" [ngValue]="c.id">{{ c.committeeName }}</option>
+					</select>
+					<div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-400">
+						<span class="material-icons text-lg">expand_more</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div *ngIf="isLoadingCommittees || isLoadingApplications" class="flex justify-center py-12">
+		<span class="material-icons animate-spin text-4xl text-blue-500">autorenew</span>
+	</div>
+
+	<!-- Main Content Area -->
+	<div *ngIf="!isLoadingCommittees && !isLoadingApplications && selectedCommitteeId" class="space-y-6">
+		
+		<!-- Stats Row -->
+		<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+			<div class="rounded-xl border border-amber-200 bg-amber-50 p-4">
+				<p class="text-sm font-medium text-amber-700">Pending Requests</p>
+				<p class="text-3xl font-bold text-amber-800 mt-1">{{ pendingApplications.length }}</p>
+			</div>
+			<div class="rounded-xl border border-blue-200 bg-blue-50 p-4">
+				<p class="text-sm font-medium text-blue-700">Total Processed</p>
+				<p class="text-3xl font-bold text-blue-800 mt-1">{{ reviewedApplications.length }}</p>
+			</div>
+			<div class="rounded-xl border border-slate-200 bg-white p-4">
+				<p class="text-sm font-medium text-slate-500">Total Applications</p>
+				<p class="text-3xl font-bold text-slate-800 mt-1">{{ applications.length }}</p>
+			</div>
+		</div>
+
+		<!-- Pending Applications Table -->
+		<div class="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+			<div class="border-b border-slate-100 bg-slate-50 px-6 py-4 flex items-center justify-between">
+				<h3 class="text-lg font-semibold text-slate-800">Pending Review</h3>
+				<span class="inline-flex items-center rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-semibold text-amber-800">
+					{{ pendingApplications.length }} Requires Action
+				</span>
+			</div>
+			
+			<div *ngIf="pendingApplications.length === 0" class="p-8 text-center text-slate-500">
+				<span class="material-icons text-4xl mb-2 text-slate-300">check_circle_outline</span>
+				<p>No pending applications to review.</p>
+			</div>
+
+			<div *ngIf="pendingApplications.length > 0" class="overflow-x-auto">
+				<table class="w-full text-left text-sm text-slate-600">
+					<thead class="bg-white border-b border-slate-200 text-xs uppercase text-slate-500">
+						<tr>
+							<th scope="col" class="px-6 py-4 font-semibold">Applicant</th>
+							<th scope="col" class="px-6 py-4 font-semibold">Message / Skills</th>
+							<th scope="col" class="px-6 py-4 font-semibold">Applied Date</th>
+							<th scope="col" class="px-6 py-4 font-semibold text-right">Actions</th>
+						</tr>
+					</thead>
+					<tbody class="divide-y divide-slate-100">
+						<tr *ngFor="let app of pendingApplications" class="hover:bg-slate-50 transition-colors">
+							<td class="px-6 py-4 align-top">
+								<div class="font-medium text-slate-900">{{ app.user?.fullName || 'Student ' + app.userId }}</div>
+								<div class="text-xs text-slate-500">{{ app.user?.email || '' }}</div>
+							</td>
+							<td class="px-6 py-4 align-top max-w-md">
+								<p class="whitespace-pre-wrap text-sm text-slate-600">{{ app.applicationMessage || 'No message provided.' }}</p>
+							</td>
+							<td class="px-6 py-4 align-top whitespace-nowrap">
+								{{ app.appliedAt | date:'mediumDate' }}
+							</td>
+							<td class="px-6 py-4 align-top text-right space-x-2 whitespace-nowrap">
+								<button 
+									(click)="approveApplication(app.membershipId)"
+									[disabled]="processingMembershipId === app.membershipId"
+									class="inline-flex items-center rounded-lg bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 transition-colors hover:bg-emerald-100 disabled:opacity-50">
+									<span class="material-icons text-[16px] mr-1">check</span> Approve
+								</button>
+								<button 
+									(click)="rejectApplication(app.membershipId)"
+									[disabled]="processingMembershipId === app.membershipId"
+									class="inline-flex items-center rounded-lg bg-rose-50 px-3 py-1.5 text-xs font-semibold text-rose-700 transition-colors hover:bg-rose-100 disabled:opacity-50">
+									<span class="material-icons text-[16px] mr-1">close</span> Reject
+								</button>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<!-- Reviewed Applications -->
+		<div *ngIf="reviewedApplications.length > 0" class="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+			<div class="border-b border-slate-100 px-6 py-4">
+				<h3 class="text-lg font-semibold text-slate-800">Past Applications</h3>
+			</div>
+			<div class="overflow-x-auto">
+				<table class="w-full text-left text-sm text-slate-600">
+					<thead class="bg-slate-50 border-b border-slate-200 text-xs uppercase text-slate-500">
+						<tr>
+							<th scope="col" class="px-6 py-3 font-semibold">Applicant</th>
+							<th scope="col" class="px-6 py-3 font-semibold">Message</th>
+							<th scope="col" class="px-6 py-3 font-semibold">Status</th>
+							<th scope="col" class="px-6 py-3 font-semibold">Date Reviewed</th>
+						</tr>
+					</thead>
+					<tbody class="divide-y divide-slate-100">
+						<tr *ngFor="let app of reviewedApplications">
+							<td class="px-6 py-3">
+								<div class="font-medium text-slate-900">{{ app.user?.fullName || 'Student ' + app.userId }}</div>
+							</td>
+							<td class="px-6 py-3 max-w-xs truncate text-xs" [title]="app.applicationMessage">
+								{{ app.applicationMessage || '-' }}
+							</td>
+							<td class="px-6 py-3">
+								<span [class]="app.status === 'APPROVED' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'" class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium">
+									{{ app.status | titlecase }}
+								</span>
+							</td>
+							<td class="px-6 py-3 whitespace-nowrap text-xs text-slate-500">
+								{{ app.approvedAt | date:'mediumDate' }}
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+	</div>
+
+	<div *ngIf="!isLoadingCommittees && committees.length === 0" class="rounded-2xl border border-slate-200 bg-white p-12 text-center shadow-sm">
+		<span class="material-icons text-5xl text-slate-300 mb-4">gavel</span>
+		<h3 class="text-lg font-semibold text-slate-800">No Committees Found</h3>
+		<p class="text-slate-500 mt-2">You are not listed as the head/faculty for any active committees.</p>
+	</div>
+</section>

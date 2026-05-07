@@ -155,6 +155,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
     return path === '/' || path === '/landing';
   }
 
+  get isAuthPage(): boolean {
+    const path = this.router.url.split('?')[0].split('#')[0];
+    return path.includes('/login') || path.includes('/register');
+  }
+
   get usePremiumGuestNavbar(): boolean {
     return !this.isLoggedIn && this.isLandingRoute;
   }

@@ -220,8 +220,8 @@
 		<ng-template #emptyTasksState>
 			<app-empty-state
 				icon="task_alt"
-				[title]="activeView === 'MY' ? 'No tasks assigned to you' : 'No committee tasks available'"
-				[subtitle]="activeView === 'MY' ? 'New assignments will appear here as soon as they are delegated.' : 'Committee task updates will appear here once they are created.'"
+				title="No tasks assigned yet."
+				subtitle="When a committee assigns you a task, it will appear here."
 			></app-empty-state>
 		</ng-template>
 	</div>

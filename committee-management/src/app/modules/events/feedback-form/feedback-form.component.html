@@ -1,0 +1,73 @@
+<div class="feedback-form-container" *ngIf="canSubmitFeedback">
+	<div class="form-header">
+		<h4 class="form-title">
+			<span class="material-icons form-title-icon">rate_review</span>
+			Share Your Feedback
+		</h4>
+		<p class="form-subtitle">Rate your experience and help us improve future events.</p>
+	</div>
+
+	<!-- Already Submitted -->
+	<div *ngIf="alreadySubmitted && successMessage" class="msg-success">
+		<span class="material-icons text-base align-middle mr-1">check_circle</span>
+		{{ successMessage }}
+	</div>
+
+	<!-- Form -->
+	<div *ngIf="!alreadySubmitted" class="form-body">
+		<!-- Star Rating -->
+		<div class="rating-section">
+			<label class="rating-label">Your Rating</label>
+			<div class="star-row">
+				<button
+					*ngFor="let star of stars"
+					type="button"
+					class="star-btn"
+					[class.star-active]="isStarActive(star)"
+					(mouseenter)="onStarHover(star)"
+					(mouseleave)="onStarLeave()"
+					(click)="onStarClick(star)"
+				>
+					<span class="material-icons">{{ isStarActive(star) ? 'star' : 'star_border' }}</span>
+				</button>
+				<span class="rating-label-text" [class.rating-selected]="rating > 0">
+					{{ getRatingLabel() }}
+				</span>
+			</div>
+		</div>
+
+		<!-- Comment -->
+		<div class="comment-section">
+			<label class="comment-label">Comment <span class="optional-tag">(optional)</span></label>
+			<textarea
+				class="comment-textarea"
+				[(ngModel)]="comment"
+				placeholder="Tell us about your experience..."
+				[maxlength]="maxCommentLength"
+				rows="4"
+			></textarea>
+			<p class="char-count" [class.char-limit]="commentLength >= maxCommentLength">
+				{{ commentLength }}/{{ maxCommentLength }}
+			</p>
+		</div>
+
+		<!-- Submit -->
+		<div class="form-actions">
+			<button
+				type="button"
+				class="btn-submit"
+				(click)="submitFeedback()"
+				[disabled]="!isFormValid || submitting"
+			>
+				<span *ngIf="submitting" class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent mr-1.5"></span>
+				<span class="material-icons text-base mr-1" *ngIf="!submitting">send</span>
+				{{ submitting ? 'Submitting...' : 'Submit Feedback' }}
+			</button>
+		</div>
+
+		<!-- Error -->
+		<p *ngIf="errorMessage" class="msg-error">
+			<span class="material-icons text-sm align-middle mr-1">error</span>{{ errorMessage }}
+		</p>
+	</div>
+</div>

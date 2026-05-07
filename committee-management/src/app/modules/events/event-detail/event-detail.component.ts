@@ -26,6 +26,9 @@ export class EventDetailComponent {
   currentUserId: number | null = null;
   registrationStatus: RegistrationStatus | null = null;
 
+  // Tab state
+  activeTab: 'details' | 'media' | 'feedback' = 'details';
+
   constructor(
     private route: ActivatedRoute,
     private eventService: EventService,
@@ -43,6 +46,10 @@ export class EventDetailComponent {
 
   get hasRegistrationStatus(): boolean {
     return !!this.registrationStatus;
+  }
+
+  get canManageMedia(): boolean {
+    return this.authService.hasAnyRole(['ADMIN', 'FACULTY']);
   }
 
   get registerButtonLabel(): string {
@@ -73,6 +80,7 @@ export class EventDetailComponent {
       this.event = undefined;
       this.registrationStatus = null;
       this.currentUserId = null;
+      this.activeTab = 'details';
 
       const id = Number(params.get('id'));
       if (!Number.isFinite(id) || id <= 0) {
@@ -100,6 +108,18 @@ export class EventDetailComponent {
         }
       });
     });
+  }
+
+  setTab(tab: 'details' | 'media' | 'feedback'): void {
+    this.activeTab = tab;
+  }
+
+  onMediaUploaded(): void {
+    // Refresh the media gallery by switching tabs and back, or rely on child component reload
+  }
+
+  onFeedbackSubmitted(): void {
+    // Feedback was submitted — the list component can be refreshed
   }
 
   registerForEvent(): void {

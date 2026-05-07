@@ -20,10 +20,13 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotBlank;
 
 @Entity
-@Table(name = "committee")
+@Table(name = "committee", uniqueConstraints = {
+    @UniqueConstraint(name = "uq_committee_name", columnNames = {"committee_name"})
+})
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Committee {
     
@@ -37,7 +40,7 @@ public class Committee {
     private String committeeName;
     
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "login_id", nullable = false)
+    @JoinColumn(name = "login_id", nullable = true)
     @JsonIgnoreProperties({"password", "user", "committees", "createdAt", "updatedAt"})
     private Login login;
 
