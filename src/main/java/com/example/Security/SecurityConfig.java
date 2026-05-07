@@ -50,6 +50,9 @@ public class SecurityConfig {
             .authorizeHttpRequests(authz -> authz
                 .requestMatchers("/", "/health").permitAll()
                 .requestMatchers("/api/auth/login", "/api/auth/register", "/api/auth/validate", "/api/auth/test-email").permitAll()
+                .requestMatchers("/api/stats").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/events").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/committees").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/auth/me").authenticated()
                 .requestMatchers(HttpMethod.POST, "/api/auth/change-password").authenticated()
                 .requestMatchers(HttpMethod.POST, "/api/auth/profile-photo").authenticated()

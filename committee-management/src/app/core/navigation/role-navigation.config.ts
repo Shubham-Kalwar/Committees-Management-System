@@ -12,6 +12,7 @@ export const ROLE_WORKSPACE_MENUS: Record<WorkspaceRole, RoleWorkspaceItem[]> = 
     { label: 'Dashboard', icon: 'dashboard', route: '/admin/dashboard' },
     { label: 'Users', icon: 'person_outline', route: '/users' },
     { label: 'Committees', icon: 'groups', route: '/committees' },
+    { label: 'Manage Faculty', icon: 'manage_accounts', route: '/users/faculty' },
     { label: 'Events', icon: 'event', route: '/events' },
     { label: 'Registrations', icon: 'how_to_reg', route: '/events/registrations/pending' },
     { label: 'Attendance', icon: 'fact_check', route: '/attendance' },

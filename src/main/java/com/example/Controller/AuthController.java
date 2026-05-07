@@ -101,9 +101,9 @@ public class AuthController {
 
             Map<String, Object> response = new HashMap<>();
             
-            // Check account status in users entity
+            // Check account status in users entity (NULL is treated as ACTIVE for pre-existing accounts)
             Users user = usersRepository.findByLoginEmail(loginRequest.getEmail()).orElse(null);
-            if (user != null && !"ACTIVE".equalsIgnoreCase(user.getAccountStatus())) {
+            if (user != null && user.getAccountStatus() != null && !"ACTIVE".equalsIgnoreCase(user.getAccountStatus())) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(new ResponceBean<>(false, "Account not activated. Please contact admin."));
             }

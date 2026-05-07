@@ -2,64 +2,55 @@
   class="fixed inset-x-0 top-0 z-50 border-b"
   [ngClass]="[
     hasSidebarOffset && !usePremiumGuestNavbar ? 'md:left-64' : '',
-    usePremiumGuestNavbar ? 'border-gray-200 bg-[#f8fafc]' : 'border-slate-200/90 bg-white/95 backdrop-blur-sm'
+    usePremiumGuestNavbar ? 'border-[#e5e7eb] bg-white/98 backdrop-blur-sm' : 'border-slate-200/90 bg-white/95 backdrop-blur-sm'
   ]"
 >
   <ng-container *ngIf="usePremiumGuestNavbar; else authenticatedNavbar">
-    <div class="mx-auto max-w-[1280px] px-8">
-      <div class="flex items-center justify-between h-[72px]">
+    <div style="width:100%;padding:0 120px">
+      <div class="flex items-center justify-between h-[64px]">
         <div class="shrink-0">
           <a
-            class="text-[1.35rem] min-[980px]:text-[1.7rem] font-semibold tracking-[-0.02em] text-gray-900 no-underline"
+            class="text-[1.25rem] min-[980px]:text-[1.4rem] font-[800] tracking-[-0.02em] text-[#0f172a] no-underline"
             [routerLink]="landingRoute"
-            title="Go to landing page"
+            title="CommitteeOS"
           >
-            {{ brandDisplayName }}
+            CommitteeOS
           </a>
         </div>
 
-        <ul class="hidden min-w-0 flex-1 items-center justify-center gap-3 min-[720px]:flex min-[980px]:gap-6">
+        <ul class="hidden min-w-0 flex-1 items-center justify-center gap-6 min-[720px]:flex">
           <li>
             <a
-              class="border-b-2 border-blue-600 pb-1 text-gray-700 hover:text-blue-600 font-medium text-[13px] min-[980px]:text-[15px] no-underline"
+              class="text-[#64748b] hover:text-[#2563eb] font-[500] text-[14px] no-underline transition-colors"
+              [routerLink]="landingRoute"
+              fragment="features"
+            >
+              Features
+            </a>
+          </li>
+          <li>
+            <a
+              class="text-[#64748b] hover:text-[#2563eb] font-[500] text-[14px] no-underline transition-colors"
+              [routerLink]="landingRoute"
+              fragment="events"
+            >
+              Events
+            </a>
+          </li>
+          <li>
+            <a
+              class="text-[#64748b] hover:text-[#2563eb] font-[500] text-[14px] no-underline transition-colors"
               [routerLink]="landingRoute"
               fragment="committees"
             >
               Committees
             </a>
           </li>
-          <li>
-            <a
-              class="text-gray-700 hover:text-blue-600 font-medium text-[13px] min-[980px]:text-[15px] no-underline"
-              [routerLink]="landingRoute"
-              fragment="member-roles"
-            >
-              Member Roles
-            </a>
-          </li>
-          <li>
-            <a
-              class="text-gray-700 hover:text-blue-600 font-medium text-[13px] min-[980px]:text-[15px] no-underline"
-              [routerLink]="landingRoute"
-              fragment="guidelines"
-            >
-              Guidelines
-            </a>
-          </li>
-          <li>
-            <a
-              class="text-gray-700 hover:text-blue-600 font-medium text-[13px] min-[980px]:text-[15px] no-underline"
-              [routerLink]="landingRoute"
-              fragment="documentation"
-            >
-              Documentation
-            </a>
-          </li>
         </ul>
 
-        <div class="flex items-center justify-end gap-2 min-[980px]:gap-4">
-          <a routerLink="/auth/login" class="text-gray-700 hover:text-blue-600 font-medium text-[13px] min-[980px]:text-sm no-underline">Login</a>
-          <a routerLink="/auth/register" class="bg-blue-600 text-white px-3 min-[980px]:px-5 py-1.5 min-[980px]:py-2 rounded-full text-[13px] min-[980px]:text-sm font-medium no-underline hover:bg-blue-700">Register</a>
+        <div class="flex items-center justify-end gap-3">
+          <a routerLink="/auth/login" class="text-[#0f172a] hover:text-[#2563eb] font-[600] text-[14px] no-underline transition-colors">Login</a>
+          <a routerLink="/auth/register" class="bg-[#2563eb] text-white px-5 py-2 rounded-full text-[14px] font-[600] no-underline hover:bg-[#1d4ed8] transition-colors shadow-[0_2px_8px_rgba(37,99,235,0.3)]">Register</a>
         </div>
       </div>
     </div>
